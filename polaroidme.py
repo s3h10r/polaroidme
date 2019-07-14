@@ -57,7 +57,7 @@ RESOURCE_FONT_SIZE = 142
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,8,3)
+__version__ = (0,8,4)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -168,7 +168,6 @@ def scale_image_to_square(image, bg_color = (255,255,255)):
     image_ratio = float(float(h)/float(w))
     add_border = 0
     if image_ratio < 1:
-        print("hallo")
         add_border = image.size[0] * (( 1 + image_ratio ) / 16)
     else:
         add_border = image.size[1] * ((image_ratio - 1) / 16)
