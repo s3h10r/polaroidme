@@ -10,8 +10,9 @@ Current version is [based on this implementation](https://github.com/thegaragela
 Example output:
 
 <img src="/examples/example.ps-10.polaroid.jpg" width="48%"></img>
-<img src="/examples/example2.ps-10.jpg" width="48%"></img>
-<img src="/examples/example.corkboard.jpg" width="80%"></img>
+<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
+<img src="/examples/example.corkboard.jpg" width="48%"></img>
+<img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
 
 usage:
 
