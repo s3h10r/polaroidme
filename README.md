@@ -1,10 +1,11 @@
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
-I guess everyone and his/her grandmother already wrote a script to
-convert an image into a "Polaroid-style"? polaroidme provides basic feature
-(scaling and/or cropping, font of your choice, high-res output) and gets the job done
-well. It is actively maintained & developed (2019).
+polaroidme is a simple to use command-line-tool for placing an image into a
+Polaroid-like frame. It offers basic features like scaling and/or cropping,
+using any (ttf-)font, supports high-res outpu and gets the job just done
+well. It is actively maintained & developed (2019). To see if it fits your needs
+take a look at the project's github-repo and check out the examples.
 
 Example output:
 
@@ -16,8 +17,6 @@ Example output:
 <img src="./examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
 
 ```
-polaroidme.py
-
 Usage:
 
   polaroidme.py [options] source-image [size] [alignment] [title]
