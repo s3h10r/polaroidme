@@ -11,7 +11,7 @@ Where:
   source-image  name of the image file to transform. If no extension is
                 specified .jpg is assumed.
   alignment     one of 'top', 'left', 'bottom', 'right' or 'center'. This
-                specifies the portion of the image to include in the final
+                specifies the portion (crop) of the image to include in the final
                 output. 'top' and 'left' are synonomous as are 'bottom' and
                 'right'.
   caption       If specified defines the caption to be displayed at the
@@ -19,7 +19,7 @@ Where:
 
 Available options are:
 
-  --nocrop        # TODOP2
+  --nocrop
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
 """
@@ -198,7 +198,7 @@ def add_text(image, title = None, description = None, font_title = None, size_ti
 
 
 if __name__ == '__main__':
-    options = { 'rotate': None }
+    options = { 'rotate': None, 'crop' : True }
     source = None
     target = None
     align = None
@@ -208,6 +208,11 @@ if __name__ == '__main__':
     while option is not None:
         if option in ("clockwise", "anticlockwise"):
             options['rotate'] = option
+        elif option in ("crop", "nocrop"):
+            if option == "nocrop":
+                options['crop'] = False
+            else:
+                options['crop'] = True
         else:
             show_error("Unrecognised option --%s" % option)
         option, args = get_option(args)
@@ -253,7 +258,10 @@ if __name__ == '__main__':
         print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
     elif round(image_ratio, 1) <= 0.8: # is_landscape
         print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
-    img = crop_image_to_square(img, align)
+    if options['crop']:
+        img = crop_image_to_square(img, align)
+    else:
+        show_error("sorry, --nocrop is not implemented yet")
     img = scale_image(img, IMAGE_SIZE)
     img = add_frame(img)
     description = None
