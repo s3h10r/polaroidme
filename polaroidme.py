@@ -108,7 +108,7 @@ def rotate_image(image, rotation):
         image = image.rotate(90)
     return image
 
-def crop_image(image, align):
+def crop_image_to_square(image, align):
     """
     crops the image into square-format
 
@@ -149,7 +149,7 @@ def crop_image(image, align):
         log.debug("re-cropped to size: %i %i" % (image.size[0], image.size[1]))
     return image
 
-def scale_square_image(image, size):
+def scale_image(image, size):
     """
     scales the image to size (up-/downsampling)
 
@@ -227,8 +227,8 @@ if __name__ == '__main__':
         print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
     elif round(image_ratio, 1) <= 0.8: # is_landscape
         print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
-    img_in = crop_image(img_in, align)
-    img_in = scale_square_image(img_in, IMAGE_SIZE)
+    img_in = crop_image_to_square(img_in, align)
+    img_in = scale_image(img_in, IMAGE_SIZE)
     img_in = add_frame(img_in)
     description = None
     img_in = add_text(img_in, caption, description)
