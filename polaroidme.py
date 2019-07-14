@@ -52,12 +52,12 @@ COLOR_BORDER  = (0, 0, 0)
 COLOR_TEXT_TITLE = (58, 68, 163)
 COLOR_TEXT_DESCR = COLOR_TEXT_TITLE
 # Font for the caption text
-RESOURCE_FONT      = "caption.ttf"
+RESOURCE_FONT      = "./fonts/default.ttf"
 RESOURCE_FONT_SIZE = 142
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,8,0)
+__version__ = (0,8,2)
 __license__ = "MIT"
 
 # --- argparsing helpers etc

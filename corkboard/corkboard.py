@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+"""
+source of this is : https://github.com/thegaragelab/pythonutils/tree/master/polaroid
+"""
 #----------------------------------------------------------------------------
 # 14-Feb-2013 ShaneG
 #

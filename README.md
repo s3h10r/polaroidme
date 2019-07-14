@@ -51,14 +51,6 @@ foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
 <!--
-example:
-
-```console
-foo@bar:~$ ./polaroidme.py ... TODO && feh test.png
-```
--->
-
-<!--
 literature
 ----------
 - https://craiget.com/python/python-pil-pretty-polaroids
@@ -66,12 +58,18 @@ literature
 
 TODO
 ----
- - support for different fonts
  - optional text: title + description (auto-scaled to the dimensions of the image)
  - eye-candy like distortion filters
+ - implement some tests
+ - rewrite corkboard (https://github.com/thegaragelab/pythonutils/tree/master/polaroid)
 
  changelog
  ---------
+
+ **0.8.2**
+ - adds free example fonts (source: https://www.dafont.com/ttf.d592)
+ - support for different fonts via argument
+
  **0.8.0**
  - supports for high-res output (argument size, default=800)
  - adds `--nocrop` option
