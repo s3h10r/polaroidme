@@ -138,3 +138,16 @@ if __name__ == '__main__':
         FONT_CAPTION = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
     except:
         show_error("Could not load resource '%s'." % fontName)
+
+    img_in = Image.open(source)
+    [w, h] = img_in.size
+    # Determine ratio of image length to width to
+    # determine oriantation (portrait, landscape or square)
+    image_ratio = float(float(h)/float(w))
+    log.debug("image_ratio: %f size_w: %i size_h: %i" % (image_ratio, w, h))
+    if round(image_ratio, 1) >= 1.3: # is_portrait
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_portrait'))
+    elif round(image_ratio, 1) == 1.0: # is_square
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
+    elif round(image_ratio, 1) <= 0.8: # is_landscape
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
