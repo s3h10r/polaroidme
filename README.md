@@ -1,9 +1,10 @@
-polaroidme
-==========
+polaroidme - converts an image into vintage polaroid style
+==========================================================
 
 I guess everyone and his/her grandmother already wrote a script to
-convert an image into a "Polaroid-style". Nevertheless i couldn't
-find one which fulfills my needs yet.
+convert an image into a "Polaroid-style"? polaroidme provides basic feature
+(scaling and/or cropping, font of your choice, high-res output) and gets the job done
+well. It is actively maintained & developed (2019).
 
 Example output:
 
@@ -50,11 +51,35 @@ foo@bar:~$ ./polaroidme.py --nocrop ./example/example.png .jpg 800 center "--noc
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
+installation
+------------
+
+The latest stable release can be found on [pypi](https://pypi.org/project/polaroidme/)
+and therefore just installed via **`pip install polaroidme`**.
+
+Using python-virtualenvs instead of installing the software system-wide
+is recommended:
+
+```console
+foo@bar:~$ python3 -m venv vent_polaroidme
+foo@bar:~$ source venv_polaroidme/bin/activate
+(venv_polaroidme) foo@bar:~$ pip install polaroidme
+[...]
+Installing collected packages: polaroidme
+  Running setup.py install for polaroidme ... done
+Successfully installed polaroidme-0.8.6
+(venv_polaroidme) foo@bar:~$ polaroidme
+(venv_polaroidme) foo@bar:~$ ...
+(venv_polaroidme) foo@bar:~$ deactivate
+foo@bar:~$
+```
+
 TODO
 ----
  - optional text: title + description (auto-scaled to the dimensions of the image)
+ - custom colors
+ - automated testing
  - eye-candy like distortion filters
- - implement some tests
  - rewrite corkboard (lab-branch) and add to master
 
 
