@@ -20,7 +20,7 @@ Where:
 
 Available options are:
 
-  --nocrop        Recale the image to fit fullframe in the final output
+  --nocrop        Rescale the image to fit fullframe in the final output
                   (default="--crop"). btw. alignment is ignored if option is set.
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
@@ -32,7 +32,7 @@ from PIL import Image, ImageDraw, ImageFont
 
 # --- configure logging
 log = logging.getLogger(__name__)
-log.setLevel(logging.DEBUG)
+log.setLevel(logging.WARNING)
 handler = logging.StreamHandler() # console-handler
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -57,7 +57,7 @@ RESOURCE_FONT_SIZE = 142
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,8,2)
+__version__ = (0,8,4)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -168,7 +168,6 @@ def scale_image_to_square(image, bg_color = (255,255,255)):
     image_ratio = float(float(h)/float(w))
     add_border = 0
     if image_ratio < 1:
-        print("hallo")
         add_border = image.size[0] * (( 1 + image_ratio ) / 16)
     else:
         add_border = image.size[1] * ((image_ratio - 1) / 16)
@@ -304,7 +303,6 @@ if __name__ == '__main__':
     if options['crop']:
         img = crop_image_to_square(img, align)
     else:
-        log.warning("--no-crop is experimental")
         img = scale_image_to_square(img)
     img = scale_image(img, size)
     img = add_frame(img)
