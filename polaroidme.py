@@ -19,6 +19,7 @@ Where:
 
 Available options are:
 
+  --nocrop        # TODOP2
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
 """
@@ -50,9 +51,10 @@ BORDER_SIZE  = 3
 # Colors
 COLOR_FRAME   = (237, 243, 214)
 COLOR_BORDER  = (0, 0, 0)
-COLOR_CAPTION = (58, 68, 163)
+COLOR_TEXT_TITLE = (58, 68, 163)
+COLOR_TEXT_DESCR = COLOR_TEXT_TITLE
 # Font for the caption text
-FONT_CAPTION = None
+FONT_TITLE = None
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
@@ -94,8 +96,80 @@ def show_error(msg):
     """
     log.critical("Error: %s" % msg)
     sys.exit(1)
-    # ---
+# ---
 
+def rotate_image(image, rotation):
+    """
+    rotates the image appropriately
+    """
+    if rotation == "clockwise":
+        image = image.rotate(-90)
+    elif rotation == "anticlockwise":
+        image = image.rotate(90)
+    return image
+
+def crop_image(image, align):
+    """
+    crops the image into square-format
+
+    returns cropped Image
+    """
+    # Do the cropping needed
+    if image.size[0] > image.size[1]:
+        if align in ("left", "top"):
+            box = (0, 0, image.size[1], image.size[1])
+        elif align in ("right", "bottom"):
+            delta = image.size[0] - image.size[1]
+            box = (delta, 0, image.size[0], image.size[1])
+        elif align == "center":
+            delta = (image.size[0] - image.size[1]) / 2
+            box = (delta, 0, image.size[0] - delta, image.size[1])
+        image = image.crop(box)
+        image.load()
+    elif image.size[1] > image.size[0]:
+        if align in ("left", "top"):
+            box = (0, 0, image.size[0], image.size[0])
+        elif align in ("right", "bottom"):
+            delta = image.size[1] - image.size[0]
+            box = (0, delta, image.size[0], image.size[1])
+        elif align == "center":
+            delta = (image.size[1] - image.size[0]) / 2
+            box = (0, delta, image.size[0], image.size[1] - delta)
+        image = image.crop(box)
+        image.load()
+    # make sure we have a perfect square
+    log.debug("cropped to size: %i %i" % (image.size[0], image.size[1]))
+    if image.size[0] != image.size[1]:
+        if image.size[0] > image.size[1]:
+            box = (0, 0, image.size[1], image.size[1])
+        else:
+            box = (0, 0, image.size[0], image.size[0])
+        image = image.crop(box)
+        image.load()
+        log.debug("re-cropped to size: %i %i" % (image.size[0], image.size[1]))
+    return image
+
+def scale_square_image(image, size):
+    """
+    scales the image to size (up-/downsampling)
+
+    returns scaled image
+    """
+    if image.size[0] != image.size[1]:
+        raise Exception("ouch - no square image.")
+    if image.size[0] > size:
+        # Downsample
+        image = image.resize((size, size), Image.ANTIALIAS)
+    else:
+        image = image.resize((size, size), Image.BICUBIC)
+    log.debug("scaled to size: %i %i" % (image.size[0], image.size[1]))
+    return image
+
+def add_frame(image_in, border_size = 3, color_frame = COLOR_FRAME, color_border = COLOR_BORDER):
+    pass
+
+def add_text(image_in, title = None, desription = None, ):
+    pass
 
 if __name__ == '__main__':
     options = { 'rotate': None }
@@ -135,12 +209,14 @@ if __name__ == '__main__':
     # Prepare our resources
     f_font = get_resource_file(RESOURCE_FONT)
     try:
-        FONT_CAPTION = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
+        FONT_TITLE = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
     except:
         show_error("Could not load resource '%s'." % fontName)
 
     img_in = Image.open(source)
     [w, h] = img_in.size
+    img_in.load()
+    img_in = rotate_image(img_in, options['rotate'])
     # Determine ratio of image length to width to
     # determine oriantation (portrait, landscape or square)
     image_ratio = float(float(h)/float(w))
@@ -151,3 +227,8 @@ if __name__ == '__main__':
         print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
     elif round(image_ratio, 1) <= 0.8: # is_landscape
         print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
+    img_in = crop_image(img_in, align)
+    img_in = scale_square_image(img_in, IMAGE_SIZE)
+    img_in = add_frame(img_in)
+    description = None
+    img_in = add_text(img_in, caption, description)
