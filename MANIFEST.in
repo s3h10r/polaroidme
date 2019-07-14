@@ -1,3 +1,4 @@
 include README.md
 include LICENSE.txt
-include fonts/*
+recursive-include polaroidme/fonts *
+include requirements.txt
