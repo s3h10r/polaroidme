@@ -22,9 +22,13 @@ Available options are:
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
 """
+import os
 import sys
 import logging
+from PIL import Image, ImageDraw, ImageFont
 
+RESOURCE_FONT      = "caption.ttf"
+RESOURCE_FONT_SIZE = 142
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -45,7 +49,13 @@ __version__ = (0,1,0)
 __license__ = "MIT"
 
 
-# --- argparsing helpers
+# --- argparsing helpers etc
+def get_resource_file(basefile):
+    """
+    Get the fully qualified name of a resource file
+    """
+    return os.path.join(os.path.dirname(os.path.realpath(__file__)), basefile)
+
 def get_option(args):
     """
     Check the argument list for an option (starting with '--').
@@ -95,11 +105,26 @@ if __name__ == '__main__':
     source, args = get_argument(args)
     if source is None:
         print(__doc__)
+        sys.exit()
     align, args = get_argument(args)
     if align is None:
         print(__doc__)
+        sys.exit()
     caption, args = get_argument(args)
     if len(args) != 0:
         print(__doc__)
+        sys.exit()
 
     log.debug("here we go...")
+    name, ext = os.path.splitext(source)
+    if not os.path.isfile(source):
+        show_error("Source file '%s' does not exist." % source)
+    target = name + ".polaroid.png"
+    if not align in ("left", "right", "top", "bottom", "center"):
+        show_error("Unknown alignment '%s'." % align)
+    # Prepare our resources
+    f_font = get_resource_file(RESOURCE_FONT)
+    try:
+        FONT_CAPTION = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
+    except:
+        show_error("Could not load resource '%s'." % fontName)
