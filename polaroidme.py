@@ -4,7 +4,7 @@ polaroidme.py
 
 Usage:
 
-  polaroidme.py [options] source-image [size] [alignment] [title] [description]
+  polaroidme.py [options] source-image [size] [alignment] [title]
 
 Where:
 
@@ -20,7 +20,8 @@ Where:
 
 Available options are:
 
-  --nocrop
+  --nocrop        Recale the image to fit fullframe in the final output
+                  (default="--crop"). btw. alignment is ignored if option is set.
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
 """
@@ -56,7 +57,7 @@ RESOURCE_FONT_SIZE = 142
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,4,0)
+__version__ = (0,8,0)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -162,6 +163,29 @@ def crop_image_to_square(image, align):
         log.debug("re-cropped to size: %i %i" % (image.size[0], image.size[1]))
     return image
 
+def scale_image_to_square(image, bg_color = (255,255,255)):
+    img_w, img_h = image.size
+    image_ratio = float(float(h)/float(w))
+    add_border = 0
+    if image_ratio < 1:
+        print("hallo")
+        add_border = image.size[0] * (( 1 + image_ratio ) / 16)
+    else:
+        add_border = image.size[1] * ((image_ratio - 1) / 16)
+    add_border = int(add_border)
+    background = None
+    if image.size[0] > image.size[1]:
+        background = Image.new('RGBA', (image.size[0] + add_border, image.size[0] + add_border), bg_color)
+    elif image.size[1] > image.size[0]:
+        background = Image.new('RGBA', (image.size[1] + add_border, image.size[1] + add_border), bg_color)
+    else:
+        return image # already square
+    bg_w, bg_h = background.size
+    offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
+    background.paste(img, offset)
+    background.load()
+    return background
+
 def scale_image(image, size):
     """
     scales the image to size (up-/downsampling)
@@ -202,7 +226,7 @@ def add_text(image, title = None, description = None, font_title = None, size_ti
     width, height = font_title.getsize(title)
     while ((width > IMAGE_SIZE) or (height > IMAGE_BOTTOM)) and (size > 0):
         size = size - 2
-        font_title = ImageFont.truetype(getResourceFile(RESOURCE_FONT), size)
+        font_title = ImageFont.truetype(get_resource_file(RESOURCE_FONT), size)
         width, height = font_title.getsize(title)
     if (size <= 0):
         showError("Text is too large")
@@ -280,7 +304,8 @@ if __name__ == '__main__':
     if options['crop']:
         img = crop_image_to_square(img, align)
     else:
-        show_error("sorry, --nocrop is not implemented yet")
+        log.warning("--no-crop is experimental")
+        img = scale_image_to_square(img)
     img = scale_image(img, size)
     img = add_frame(img)
     description = None
