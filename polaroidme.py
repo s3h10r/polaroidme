@@ -42,11 +42,10 @@ RESOURCE_FONT_SIZE = 142
 
 # Image size constraints
 IMAGE_SIZE   = 800
-IMAGE_TOP    = IMAGE_SIZE / 16 # 50
-IMAGE_BOTTOM = IMAGE_SIZE / 5.333
-IMAGE_LEFT   = IMAGE_SIZE / 16
-IMAGE_RIGHT  = IMAGE_SIZE / 16
-
+IMAGE_TOP    = int(IMAGE_SIZE / 16)
+IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)
+IMAGE_LEFT   = int(IMAGE_SIZE / 16)
+IMAGE_RIGHT  = int(IMAGE_SIZE / 16)
 BORDER_SIZE  = 3
 # Colors
 COLOR_FRAME   = (237, 243, 214)
@@ -58,7 +57,7 @@ FONT_TITLE = None
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,1,0)
+__version__ = (0,2,0)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -165,11 +164,38 @@ def scale_image(image, size):
     log.debug("scaled to size: %i %i" % (image.size[0], image.size[1]))
     return image
 
-def add_frame(image_in, border_size = 3, color_frame = COLOR_FRAME, color_border = COLOR_BORDER):
-    pass
+def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = COLOR_BORDER):
+    """
+    adds the frame around the image
+    """
+    frame = Image.new("RGB", (IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT, IMAGE_SIZE + IMAGE_TOP + IMAGE_BOTTOM), COLOR_BORDER)
+    # Create outer and inner borders
+    draw = ImageDraw.Draw(frame)
+    draw.rectangle((BORDER_SIZE, BORDER_SIZE, frame.size[0] - BORDER_SIZE, frame.size[1] - BORDER_SIZE), fill = COLOR_FRAME)
+    draw.rectangle((IMAGE_LEFT - BORDER_SIZE, IMAGE_TOP - BORDER_SIZE, IMAGE_LEFT + IMAGE_SIZE + BORDER_SIZE, IMAGE_TOP + IMAGE_SIZE + BORDER_SIZE), fill = COLOR_BORDER)
+    # Add the source image
+    frame.paste(image, (IMAGE_LEFT, IMAGE_TOP))
+    # All done
+    return frame
 
-def add_text(image_in, title = None, desription = None, ):
-    pass
+def add_text(image, title = None, description = None, font_title = None, size_title = None):
+    """
+    adds the title & description to the image
+    """
+    if title is None:
+        return image
+    size = size_title
+    width, height = font_title.getsize(title)
+    while ((width > IMAGE_SIZE) or (height > IMAGE_BOTTOM)) and (size > 0):
+        size = size - 2
+        font_title = ImageFont.truetype(getResourceFile(RESOURCE_FONT), size)
+        width, height = font_title.getsize(title)
+    if (size <= 0):
+        showError("Text is too large")
+    draw = ImageDraw.Draw(image)
+    draw.text(((IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT - width) / 2, IMAGE_SIZE + IMAGE_TOP + ((IMAGE_BOTTOM - height) / 2)), title, font = font_title, fill = COLOR_TEXT_TITLE)
+    return image
+
 
 if __name__ == '__main__':
     options = { 'rotate': None }
@@ -214,9 +240,9 @@ if __name__ == '__main__':
         show_error("Could not load resource '%s'." % fontName)
 
     img_in = Image.open(source)
-    [w, h] = img_in.size
     img_in.load()
-    img_in = rotate_image(img_in, options['rotate'])
+    img = rotate_image(img_in, options['rotate'])
+    [w, h] = img.size
     # Determine ratio of image length to width to
     # determine oriantation (portrait, landscape or square)
     image_ratio = float(float(h)/float(w))
@@ -227,8 +253,12 @@ if __name__ == '__main__':
         print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
     elif round(image_ratio, 1) <= 0.8: # is_landscape
         print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
-    img_in = crop_image_to_square(img_in, align)
-    img_in = scale_image(img_in, IMAGE_SIZE)
-    img_in = add_frame(img_in)
+    img = crop_image_to_square(img, align)
+    img = scale_image(img, IMAGE_SIZE)
+    img = add_frame(img)
     description = None
-    img_in = add_text(img_in, caption, description)
+    img = add_text(img, caption, description, font_title = FONT_TITLE, size_title = RESOURCE_FONT_SIZE)
+
+    # Save the result
+    print(target)
+    img.save(target)
