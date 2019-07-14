@@ -4,18 +4,19 @@ polaroidme.py
 
 Usage:
 
-  polaroidme.py [options] source-image alignment [caption]
+  polaroidme.py [options] source-image [size] [alignment] [title] [description]
 
 Where:
 
   source-image  name of the image file to transform. If no extension is
                 specified .jpg is assumed.
+  size          size of the picture part of the polaroid (default=800)
   alignment     one of 'top', 'left', 'bottom', 'right' or 'center'. This
                 specifies the portion (crop) of the image to include in the final
                 output. 'top' and 'left' are synonomous as are 'bottom' and
-                'right'.
-  caption       If specified defines the caption to be displayed at the
-                bottom of the image.
+                'right'. (default="center")
+  title         If specified defines the caption to be displayed at the
+                bottom of the image. (default=None)
 
 Available options are:
 
@@ -37,9 +38,6 @@ handler.setFormatter(formatter)
 log.addHandler(handler)
 # ---
 
-RESOURCE_FONT      = "caption.ttf"
-RESOURCE_FONT_SIZE = 142
-
 # Image size constraints
 IMAGE_SIZE   = 800
 IMAGE_TOP    = int(IMAGE_SIZE / 16)
@@ -53,11 +51,12 @@ COLOR_BORDER  = (0, 0, 0)
 COLOR_TEXT_TITLE = (58, 68, 163)
 COLOR_TEXT_DESCR = COLOR_TEXT_TITLE
 # Font for the caption text
-FONT_TITLE = None
+RESOURCE_FONT      = "caption.ttf"
+RESOURCE_FONT_SIZE = 142
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,2,0)
+__version__ = (0,4,0)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -96,6 +95,21 @@ def show_error(msg):
     log.critical("Error: %s" % msg)
     sys.exit(1)
 # ---
+
+def setup_globals(size):
+    global IMAGE_SIZE
+    global IMAGE_TOP
+    global IMAGE_BOTTOM
+    global IMAGE_LEFT
+    global IMAGE_RIGHT
+    global BORDER_SIZE
+    IMAGE_SIZE   = size
+    IMAGE_TOP    = int(IMAGE_SIZE / 16)
+    IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)
+    IMAGE_LEFT   = int(IMAGE_SIZE / 16)
+    IMAGE_RIGHT  = int(IMAGE_SIZE / 16)
+    BORDER_SIZE  = 3
+
 
 def rotate_image(image, rotation):
     """
@@ -200,8 +214,9 @@ def add_text(image, title = None, description = None, font_title = None, size_ti
 if __name__ == '__main__':
     options = { 'rotate': None, 'crop' : True }
     source = None
+    size = IMAGE_SIZE
     target = None
-    align = None
+    align = "center"
     caption = None
     # process options
     option, args = get_option(sys.argv[1:])
@@ -221,15 +236,19 @@ if __name__ == '__main__':
     if source is None:
         print(__doc__)
         sys.exit()
-    align, args = get_argument(args)
-    if align is None:
-        print(__doc__)
-        sys.exit()
+    size, args = get_argument(args)
+    if size:
+        size = int(size)
+    else:
+        size = IMAGE_SIZE
+    align_tmp, args = get_argument(args)
+    if align_tmp:
+        align = align_tmp
     caption, args = get_argument(args)
     if len(args) != 0:
         print(__doc__)
         sys.exit()
-
+    setup_globals(size)
     log.debug("here we go...")
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
@@ -240,9 +259,9 @@ if __name__ == '__main__':
     # Prepare our resources
     f_font = get_resource_file(RESOURCE_FONT)
     try:
-        FONT_TITLE = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
+        font_title = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
     except:
-        show_error("Could not load resource '%s'." % fontName)
+        show_error("Could not load resource '%s'." % f_font)
 
     img_in = Image.open(source)
     img_in.load()
@@ -262,11 +281,12 @@ if __name__ == '__main__':
         img = crop_image_to_square(img, align)
     else:
         show_error("sorry, --nocrop is not implemented yet")
-    img = scale_image(img, IMAGE_SIZE)
+    img = scale_image(img, size)
     img = add_frame(img)
     description = None
-    img = add_text(img, caption, description, font_title = FONT_TITLE, size_title = RESOURCE_FONT_SIZE)
+    img = add_text(img, caption, description, font_title = font_title, size_title = RESOURCE_FONT_SIZE)
 
     # Save the result
+    log.debug("size: %i %i" % (img.size[0], img.size[1]))
     print(target)
     img.save(target)
