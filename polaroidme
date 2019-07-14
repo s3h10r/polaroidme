@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 """
-polaroidme.py
+polaroidme - converts an image into vintage polaroid style
 
 Usage:
 
@@ -24,6 +25,12 @@ Available options are:
                   (default="--crop"). btw. alignment is ignored if option is set.
   --clockwise     Rotate the image clockwise before processing
   --anticlockwise Rotate the image anti-clockwise before processing
+
+Latest version
+
+  The `latest version is available on github <https://github.com/s3h10r/polaroidme>`_
+
+Current Version
 """
 import os
 import sys
@@ -258,6 +265,7 @@ if __name__ == '__main__':
     source, args = get_argument(args)
     if source is None:
         print(__doc__)
+        print("  v" + '.'.join([str(el) for el in __version__]))
         sys.exit()
     size, args = get_argument(args)
     if size:
@@ -270,6 +278,7 @@ if __name__ == '__main__':
     caption, args = get_argument(args)
     if len(args) != 0:
         print(__doc__)
+        print("  v" + '.'.join([str(el) for el in __version__]))
         sys.exit()
     setup_globals(size)
     log.debug("here we go...")

@@ -53,6 +53,7 @@ foo@bar:~$ feh ./example/example.polaroid.png
 TODO
 ----
  - optional text: title + description (auto-scaled to the dimensions of the image)
+ - pypi packaging
  - eye-candy like distortion filters
  - implement some tests
  - rewrite corkboard (lab-branch) and add to master
@@ -60,6 +61,10 @@ TODO
 
  changelog
  ---------
+
+ **0.8.4**
+ - updates usage-string
+ - adds correct file encoding (`pydoc3 ./polaroidme`)
 
  **0.8.2**
  - adds free example fonts (source: https://www.dafont.com/ttf.d592)
