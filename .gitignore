@@ -1,2 +1,5 @@
 *pyc
 /input/
+/build/
+/dist/
+/polaroidme.egg-info/
