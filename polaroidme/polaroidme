@@ -5,17 +5,17 @@ polaroidme - converts an image into vintage polaroid style
 
 Usage:
 
-  polaroidme.py [options] source-image [size] [alignment] [title]
+  polaroidme [options] source-image [size] [alignment] [title]
 
 Where:
 
   source-image  name of the image file to transform. If no extension is
                 specified .jpg is assumed.
   size          size of the picture part of the polaroid (default=800)
-  alignment     one of 'top', 'left', 'bottom', 'right' or 'center'. This
-                specifies the portion (crop) of the image to include in the final
-                output. 'top' and 'left' are synonomous as are 'bottom' and
-                'right'. (default="center")
+  alignment     This specifies the portion (crop) of the image to include in the final
+                output. One of 'top', 'left', 'bottom', 'right' or 'center'.
+                'top' and 'left' are synonomous as are 'bottom' and
+                'right'. (default="center"). Omitted if --nocrop option is set.
   title         If specified defines the caption to be displayed at the
                 bottom of the image. (default=None)
 
@@ -66,7 +66,7 @@ PACKAGE_NAME = "polaroidme"
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,9,0)
+__version__ = (0,9,1)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -283,9 +283,10 @@ if __name__ == '__main__':
         size = int(size)
     else:
         size = IMAGE_SIZE
-    align_tmp, args = get_argument(args)
-    if align_tmp:
-        align = align_tmp
+    if options['crop']: # omitted if --nocrop
+        align_tmp, args = get_argument(args)
+        if align_tmp:
+            align = align_tmp
     caption, args = get_argument(args)
     if len(args) != 0:
         print(__doc__)

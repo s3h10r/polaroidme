@@ -1,15 +1,23 @@
+==========================================================
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
 polaroidme is a simple to use command-line-tool for placing an image into a
-Polaroid-like frame. It offers basic features like scaling and/or cropping,
-using any (ttf-)font, supports high-res output and gets the job just done
-well. It is actively maintained & developed (2019). To see if it fits your needs
-take a look at the project's github-repo and check out the examples.
+Polaroid-like frame and optionally put a title / description on the bottom.
+The default font mimics scribbled handwriting but any (ttf-)font
+which suits your taste is supported. The tool offers basic features
+like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
+supports high-res output and gets it's job done well.
+
+polaroidme is actively maintained & developed (2019). To see if it fits
+your needs take a look at the project's github-repo and check out the
+[examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
+
+Contributions are welcome, and they are greatly appreciated!
 
 Example output:
 
-<img src="/examples/example.ps-10.polaroid.jpg" width="48%"></img>
+<img src="/examples/example.ps-10.polaroid.png" width="48%"></img>
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
@@ -19,17 +27,17 @@ Example output:
 ```
 Usage:
 
-  polaroidme.py [options] source-image [size] [alignment] [title]
+  polaroidme [options] source-image [size] [alignment] [title]
 
 Where:
 
   source-image  name of the image file to transform. If no extension is
                 specified .jpg is assumed.
   size          size of the picture part of the polaroid (default=800)
-  alignment     one of 'top', 'left', 'bottom', 'right' or 'center'. This
-                specifies the portion (crop) of the image to include in the final
-                output. 'top' and 'left' are synonomous as are 'bottom' and
-                'right'. (default="center")
+  alignment     This specifies the portion (crop) of the image to include in the final
+                output. One of 'top', 'left', 'bottom', 'right' or 'center'.
+                'top' and 'left' are synonomous as are 'bottom' and
+                'right'. (default="center"). Omitted if --nocrop option is set
   title         If specified defines the caption to be displayed at the
                 bottom of the image. (default=None)
 
@@ -41,12 +49,12 @@ Available options are:
   --anticlockwise Rotate the image anti-clockwise before processing
 ```
 
-example:
+example usage:
 
 ```console
-foo@bar:~$ ./polaroidme.py --crop ./example/example.png .jpg 800 center "--crop option center"
+foo@bar:~$ polaroidme --crop ./example/example.png .jpg 800 center "--crop option center"
 foo@bar:~$ feh ./example/example.polaroid.png
-foo@bar:~$ ./polaroidme.py --nocrop ./example/example.png .jpg 800 center "--nocrop option"
+foo@bar:~$ polaroidme --nocrop ./example/example.png .jpg 800 "--nocrop option"
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
@@ -54,10 +62,10 @@ installation
 ------------
 
 The latest stable release can be found on [pypi](https://pypi.org/project/polaroidme/)
-and therefore just installed via **`pip install polaroidme`**.
+and therefore installed via **`pip install polaroidme`**.
 
-Using python-virtualenvs instead of installing the software system-wide
-is recommended:
+Instead of installing the software system-wide it's usally best practice to install
+it in a python-virtualenv:
 
 ```console
 foo@bar:~$ python3 -m venv vent_polaroidme
@@ -75,8 +83,11 @@ foo@bar:~$
 
 TODO
 ----
- - optional text: title + description (auto-scaled to the dimensions of the image)
+
+ - implement a more convenient arparsing
+   (add ``--use-font <pathtofont>``, shorten the --nocrop call (alignment is unused in this case, ...)
  - custom colors
+ - option to put a description-text below title
  - automated testing
  - eye-candy like distortion filters
  - rewrite corkboard (lab-branch) and add to master
@@ -84,6 +95,11 @@ TODO
 
  changelog
  ---------
+
+ **0.9.1**
+ - argument alignment omitted if `--nocrop option` is set
+ - updates packaging meta-data & docs
+ - adds more free fonts. changes default font to [Jakes Handwriting](https://www.dafont.com/jakeshandwriting.font)
 
  **0.9.0**
  - packaging (pypi)

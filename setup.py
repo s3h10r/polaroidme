@@ -5,26 +5,31 @@ from setuptools.command.install import install
 # https://blog.niteo.co/setuptools-run-custom-code-in-setup-py/
 class CustomInstallCommand(install):
     def run(self):
-        print("Hello, developer, how are you? :)")
+        print("Hello, how are you? :)")
         install.run(self)
-
 
 with open('requirements.txt') as f:
     requirements = f.read().splitlines()
 
 long_description_md = """
 polaroidme is a simple to use command-line-tool for placing an image into a
-Polaroid-like frame. It offers basic features like scaling and/or cropping,
-using any (ttf-)font, supports high-res output and gets the job just done
-well. It is actively maintained & developed (2019). To see if it fits your needs
-take a look at the project's github-repo and check out the examples.
+Polaroid-like frame and optionally put a title / description on the bottom.
+The default font mimics scribbled handwriting but any (ttf-)font
+which suits your taste is supported. The tool offers basic features
+like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
+supports high-res output and gets the job just done well.
+polaroidme is actively maintained & developed (2019).
+To see if it fits your needs take a look at the project's
+github-repo and check out the `examples`_
 
-Feel free to report bugs, submit featurerequest or contribute!
+Contributions are welcome, and they are greatly appreciated!
+
+_`examples`: https://github.com/s3h10r/polaroidme/blob/master/README.md
 """
 
 setuptools.setup(
      name='polaroidme',
-     version='0.9.0',
+     version='0.9.1',
      scripts=['polaroidme/polaroidme'] ,
      author="Sven Hessenmüller",
      author_email="sven.hessenmueller@gmail.com",
@@ -38,6 +43,10 @@ setuptools.setup(
          "Programming Language :: Python :: 3",
          "License :: OSI Approved :: MIT License",
          "Operating System :: OS Independent",
+         "Development Status :: 4 - Beta",
+         "Environment :: Console",
+         "Topic :: Multimedia :: Graphics",
+         "Topic :: Utilities",
      ],
      cmdclass={
         'install': CustomInstallCommand,

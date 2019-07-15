@@ -9,7 +9,6 @@ source ./tmp/venv_polaroidme/bin/activate
 pip3 install ./dist/*
 find ./tmp/venv_polaroidme/ -name "*ttf"
 cp ./examples/example.ps-10.png ./tmp/tests/
-polaroidme ./tmp/tests/example.ps-10.png 800 center "test_build.sh - a fresh build installed via pip"
+polaroidme ./tmp/tests/example.ps-10.png 800 center "testbuild script"
 feh ./tmp/tests/example.ps-10.polaroid.png
 rm -Rf ./tmp/
-#deactivate
