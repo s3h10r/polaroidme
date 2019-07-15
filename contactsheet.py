@@ -26,6 +26,7 @@ Current Version
 TODO
 ====
 [ ] option: filename as caption on bottom/top/left/right of thumbnail
+    => import / using polaroidme for this should be fine ("thumbnails are polaroids")
 [ ] color
 0.2.0
 [X] "self-optimizing" grid layout (no empty slots) -> aspect_ratio_cs='free'
