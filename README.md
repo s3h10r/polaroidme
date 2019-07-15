@@ -3,7 +3,7 @@ polaroidme - converts an image into vintage polaroid style
 
 polaroidme is a simple to use command-line-tool for placing an image into a
 Polaroid-like frame. It offers basic features like scaling and/or cropping,
-using any (ttf-)font, supports high-res outpu and gets the job just done
+using any (ttf-)font, supports high-res output and gets the job just done
 well. It is actively maintained & developed (2019). To see if it fits your needs
 take a look at the project's github-repo and check out the examples.
 
