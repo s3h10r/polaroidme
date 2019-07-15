@@ -85,7 +85,7 @@ TODO
  changelog
  ---------
 
- **0.8.6**
+ **0.9.0**
  - packaging (pypi)
 
  **0.8.4**

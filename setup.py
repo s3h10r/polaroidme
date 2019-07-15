@@ -24,7 +24,7 @@ Feel free to report bugs, submit featurerequest or contribute!
 
 setuptools.setup(
      name='polaroidme',
-     version='0.8.7',
+     version='0.9.0',
      scripts=['polaroidme/polaroidme'] ,
      author="Sven Hessenmüller",
      author_email="sven.hessenmueller@gmail.com",
