@@ -66,7 +66,7 @@ PACKAGE_NAME = "polaroidme"
 
 __author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
 __date__ = '2019'
-__version__ = (0,9,1)
+__version__ = (0,9,2)
 __license__ = "MIT"
 
 # --- argparsing helpers etc
@@ -130,6 +130,37 @@ def setup_globals(size):
     BORDER_SIZE  = 3
 
 
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE):
+    """
+    returns
+        PIL image instance
+    """
+    caption = title
+    img_in = Image.open(source)
+    img_in.load()
+    img = rotate_image(img_in, options['rotate'])
+    [w, h] = img.size
+    # Determine ratio of image length to width to
+    # determine oriantation (portrait, landscape or square)
+    image_ratio = float(float(h)/float(w))
+    log.debug("image_ratio: %f size_w: %i size_h: %i" % (image_ratio, w, h))
+    if round(image_ratio, 1) >= 1.3: # is_portrait
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_portrait'))
+    elif round(image_ratio, 1) == 1.0: # is_square
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
+    elif round(image_ratio, 1) <= 0.8: # is_landscape
+        print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
+    if options['crop']:
+        img = crop_image_to_square(img, align)
+    else:
+        img = scale_image_to_square(img)
+    img = scale_image(img, size)
+    img = add_frame(img)
+    description = None
+    img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
+    return img
+
+
 def rotate_image(image, rotation):
     """
     rotates the image appropriately
@@ -183,7 +214,7 @@ def crop_image_to_square(image, align):
 
 def scale_image_to_square(image, bg_color = (255,255,255)):
     img_w, img_h = image.size
-    image_ratio = float(float(h)/float(w))
+    image_ratio = float(float(img_h)/float(img_w))
     add_border = 0
     if image_ratio < 1:
         add_border = image.size[0] * (( 1 + image_ratio ) / 16)
@@ -199,7 +230,7 @@ def scale_image_to_square(image, bg_color = (255,255,255)):
         return image # already square
     bg_w, bg_h = background.size
     offset = ((bg_w - img_w) // 2, (bg_h - img_h) // 2)
-    background.paste(img, offset)
+    background.paste(image, offset)
     background.load()
     return background
 
@@ -233,23 +264,34 @@ def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = 
     # All done
     return frame
 
-def add_text(image, title = None, description = None, font_title = None, size_title = None):
+def add_text(image, title = None, description = None, f_font = None, font_size = None):
     """
     adds the title & description to the image
     """
     if title is None:
         return image
-    size = size_title
+    size = font_size
+    f_font = get_resource_file(f_font)
+    try:
+        font_title = ImageFont.truetype(f_font, font_size)
+    except:
+        show_error("Could not load resource '%s'." % f_font)
+
     width, height = font_title.getsize(title)
     while ((width > IMAGE_SIZE) or (height > IMAGE_BOTTOM)) and (size > 0):
         size = size - 2
-        font_title = ImageFont.truetype(get_resource_file(RESOURCE_FONT), size)
+        try:
+            font_title = ImageFont.truetype(f_font, font_size)
+        except:
+            show_error("Could not load resource '%s'." % f_font)
+        font_title = ImageFont.truetype(get_resource_file(f_font), size)
         width, height = font_title.getsize(title)
     if (size <= 0):
         showError("Text is too large")
     draw = ImageDraw.Draw(image)
     draw.text(((IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT - width) / 2, IMAGE_SIZE + IMAGE_TOP + ((IMAGE_BOTTOM - height) / 2)), title, font = font_title, fill = COLOR_TEXT_TITLE)
     return image
+
 
 
 if __name__ == '__main__':
@@ -302,11 +344,9 @@ if __name__ == '__main__':
         show_error("Unknown alignment '%s'." % align)
     # Prepare our resources
     f_font = get_resource_file(RESOURCE_FONT)
-    try:
-        font_title = ImageFont.truetype(f_font, RESOURCE_FONT_SIZE)
-    except:
-        show_error("Could not load resource '%s'." % f_font)
+    font_size = RESOURCE_FONT_SIZE
 
+    # ---> TODO use make_polaroid here instead ...
     img_in = Image.open(source)
     img_in.load()
     img = rotate_image(img_in, options['rotate'])
@@ -328,7 +368,7 @@ if __name__ == '__main__':
     img = scale_image(img, size)
     img = add_frame(img)
     description = None
-    img = add_text(img, caption, description, font_title = font_title, size_title = RESOURCE_FONT_SIZE)
+    img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
 
     # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))

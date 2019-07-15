@@ -25,7 +25,7 @@ Current Version
 """
 TODO
 ====
-[ ] option: filename as caption on bottom/top/left/right of thumbnail
+[P] option: filename as caption on bottom/top/left/right of thumbnail
     => import / using polaroidme for this should be fine ("thumbnails are polaroids")
 [ ] color
 0.2.0
@@ -34,6 +34,10 @@ TODO
 import os
 import sys
 import logging
+
+from polaroidme import make_polaroid
+#from polaroidme import setup_globals, make_polaroid
+
 from PIL import Image, ImageDraw, ImageFont
 
 # --- configure logging
@@ -51,9 +55,11 @@ __version__ = (0,1,2)
 __license__ = "MIT"
 
 
-def make_contact_sheet(fnames = None, ncols = 4,nrows = 4, photow = 360,photoh = 400,
-                       marl = 0, mart = 0, marr = 0, marb = 0,
-                       padding = 0):
+def make_contact_sheet( fnames = None, ncols = 4,nrows = 4,
+                        photow = 360,photoh = 400,
+                        marl = 0, mart = 0, marr = 0, marb = 0,
+                        padding = 0,
+                        thumb_as_polaroid=True, f_font = None ):
     """
     Make a contact sheet from a list of filenames:
 
@@ -95,24 +101,24 @@ def make_contact_sheet(fnames = None, ncols = 4,nrows = 4, photow = 360,photoh =
             upper = mart + irow*(photoh+padding)
             lower = upper + photoh
             bbox = (left,upper,right,lower)
-            try:
-                # Read in an image and resize appropriately
-                #img = Image.open(fnames[count]).resize((photow,photoh))
 
-                # --- scales the image proportionally to fit the thumbnail box...
+            # Read in an image and resize appropriately
+            proid_options = {'crop' : False, 'rotate' : None}
+            if thumb_as_polaroid:
+                img = make_polaroid(fnames[count], 800, proid_options, "center", title=os.path.basename(fnames[count]), f_font = f_font)
+            else:
+            #img = Image.open(fnames[count]).resize((photow,photoh))
                 img = Image.open(fnames[count])
-                img_bbox = img.getbbox()
-                width = img_bbox[2] - img_bbox[0]
-                height = img_bbox[3] - img_bbox[1]
-                # calculate a scaling factor depending on fitting the larger dimension into the thumbnail
-                ratio = max(height/float(photoh), width/float(photow))
-                newWidth = int(width/ratio)
-                newHeight = int(height/ratio)
-                newSize = (newWidth, newHeight)
-                img = img.resize(newSize)
-            except:
-                break
-
+            # --- scale the image proportionally to fit the thumbnail box...
+            img_bbox = img.getbbox()
+            width = img_bbox[2] - img_bbox[0]
+            height = img_bbox[3] - img_bbox[1]
+            # calculate a scaling factor depending on fitting the larger dimension into the thumbnail
+            ratio = max(height/float(photoh), width/float(photow))
+            newWidth = int(width/ratio)
+            newHeight = int(height/ratio)
+            newSize = (newWidth, newHeight)
+            img = img.resize(newSize)
             new_left = left
             new_upper = upper
             if ( newWidth < photow):
@@ -121,6 +127,10 @@ def make_contact_sheet(fnames = None, ncols = 4,nrows = 4, photow = 360,photoh =
                 new_upper = int(upper + ((photoh - newHeight)/2))
             inew.paste(img, (new_left, new_upper))
             count += 1
+            if count == len(fnames):
+                break
+        if count == len(fnames):
+            break
 
     return inew
 
@@ -262,6 +272,8 @@ if __name__ == '__main__':
 #    img = make_contact_sheet(fqfn_images, ncols = 1, nrows = 7,
     img = make_contact_sheet(fqfn_images, ncols = ncols, nrows = nrows,
         photow = photow, photoh = photoh, padding=padding,
-        marl=mar, mart=mar, marr=mar, marb = mar)
+        marl=mar, mart=mar, marr=mar, marb = mar,
+        thumb_as_polaroid = True, f_font = "fonts/smallbars.ttf"
+)
 
     img.save("contactsheet.png")
