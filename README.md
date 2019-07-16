@@ -14,6 +14,10 @@ polaroidme is simple to use:
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
+<img src="/examples/DSCF4700.polaroid.png" width="48%"></img>
+<img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
+
+
 If you need more control over the output polaroidme offers you plenty of options.
 The `--nocrop` Flag is an example of an option which is handy if your input images
 are not in square-format and you don't want to get parts cropped (default).   
@@ -37,10 +41,6 @@ your needs take a look at the project's github-repo and check out the
 
 Contributions are welcome, and they are greatly appreciated!
 
-Example output:
-
-<img src="/examples/DSCF4700.polaroid.png" width="48%"></img>
-<img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
