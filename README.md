@@ -62,7 +62,7 @@ more example output
 -------------------
 
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
-<img src="/examples/" width="48%"></img>
+<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="./examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
 
