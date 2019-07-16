@@ -1,12 +1,23 @@
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
-polaroidme is a simple to use command-line-tool for placing an image into a
+polaroidme is a command-line-tool for placing an image into a
 Polaroid-like frame and optionally put a title / description on the bottom.
 The default font mimics scribbled handwriting but any (ttf-)font
 which suits your taste is supported. The tool offers basic features
 like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
+
+polaroidme is simple to use:
+
+```console
+foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
+```
+
+If you need more control over the output polaroidme offers you plenty of options.
+The `--nocrop` Flag is an example of an option which is handy if your input images
+are not in square-format and you don't want to get parts cropped (default).   
+
 
 Though polaroidme is intended and commonly used as a command-line-tool it is also
 a regular python-module (since version 0.9.2). Using it in other software is
@@ -37,18 +48,17 @@ Example output:
 
 <!-- TODO: add contactsheet example -->
 
-how to use?
------------
+usage
+-----
 
 example usage:
 
-
 ```console
-foo@bar:~$ polaroidme ./example/example.png .jpg --title "--crop option center" -o /tmp/mypolaroid.png
+foo@bar:~$ polaroidme ./example/example.png .jpg -o /tmp/mypolaroid.png
 ```
 
 If the `-o, --output` argument is omitted the resulting filename will be the input-filename
-extended by the string '.polaroid.', for example:
+extended by the string '.polaroid.' For example:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png --size 400 --nocrop --title "--nocrop option"
@@ -63,7 +73,7 @@ or any image viewer of your choice:
 foo@bar:~$ feh /tmp/example.polaroid.png
 ```
 
-all available options of polaroidme:
+Use `polaroidme --help` to get a description of all available options:
 
 ```
 polaroidme - converts an image into vintage polaroid style
