@@ -72,10 +72,7 @@ RESOURCE_FONT      = "fonts/default.ttf"
 RESOURCE_FONT_SIZE = 142
 PACKAGE_NAME = "polaroidme"
 
-__author__ = 'Sven Hessenmüller (sven.hessenmueller@gmail.com)'
-__date__ = '2019'
 __version__ = (0,9,2)
-__license__ = "MIT"
 
 # --- argparsing helpers etc
 def get_resource_file(basefile):
