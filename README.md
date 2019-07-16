@@ -175,8 +175,8 @@ TODO
 ----
 
  - custom colors
+ - finish contactsheet (feature-branch) and add it to master
  - basic automated testing
- - finish contactsheet
  - rewrite corkboard (lab-branch) and add to master
  - option to put a description-text below title
  - eye-candy like distortion filters / blending paper textures
@@ -185,10 +185,11 @@ TODO
  changelog
  ---------
 
- **0.9.2** INPROGRESS (lab-branch)
- - converts into a "real" python-module which exports its core-functionality (`make_polaroid()`-function)
- - adds contactsheet-script (thumbnails can be polaroids with filename as caption)
- - convinient argparsing (via docopt)
+ **0.9.2**
+ - implements convinient argparsing (via docopt)
+ - minor bugfixes
+ - makes code also usable as a python-module and export `make_polaroid()`-function
+ - inits contactsheet-script (thumbnails can be polaroids with filename as caption)
  - testbuild-script
  - updates docs
 
