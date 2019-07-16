@@ -14,6 +14,8 @@ polaroidme is simple to use:
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
+Example output:
+
 <img src="/examples/DSCF4700.polaroid.png" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
 
@@ -40,6 +42,8 @@ your needs take a look at the project's github-repo and check out the
 [examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
 
 Contributions are welcome, and they are greatly appreciated!
+
+More example output:
 
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
