@@ -29,25 +29,41 @@ Contributions are welcome, and they are greatly appreciated!
 Example output:
 
 <img src="/examples/DSCF4700.polaroid.png" width="48%"></img>
-<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
-<img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
+<img src="/examples/example.corkboard.jpg" width="48%"></img>
+<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="./examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
+
+<!-- TODO: add contactsheet example -->
 
 how to use?
 -----------
 
 example usage:
 
+
 ```console
-foo@bar:~$ polaroidme ./example/example.png .jpg --size 800 --align center --title "--crop option center"
-foo@bar:~$ feh ./example/example.polaroid.png
-foo@bar:~$ polaroidme --nocrop ./example/example.png --size 800 --title "--nocrop option"
-foo@bar:~$ feh ./example/example.polaroid.png
+foo@bar:~$ polaroidme ./example/example.png .jpg --title "--crop option center" -o /tmp/mypolaroid.png
 ```
 
-all available options:
+If the `-o, --output` argument is omitted the resulting filename will be the input-filename
+extended by the string '.polaroid.', for example:
+
+```console
+foo@bar:~$ polaroidme ./example/example.png --size 400 --nocrop --title "--nocrop option"
+```
+
+will create the file `./example/example.polaroid.png`.
+
+To view the picture from the console you can use [feh](https://feh.finalrewind.org)
+or any image viewer of your choice:
+
+```
+foo@bar:~$ feh /tmp/example.polaroid.png
+```
+
+all available options of polaroidme:
 
 ```
 polaroidme - converts an image into vintage polaroid style
@@ -86,8 +102,6 @@ Options:
 
   -h, --help       Print this.
       --version    Print version.
-
-The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 ```
 
 installation

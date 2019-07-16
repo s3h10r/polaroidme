@@ -332,13 +332,16 @@ if __name__ == '__main__':
         f_font = args['--font']
     else:
         f_font = RESOURCE_FONT
+    if args['--output']:
+        target = args['--output']
     # ---
     setup_globals(size)
     # heree we go...
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
         show_error("Source file '%s' does not exist." % source)
-    target = name + ".polaroid.png"
+    if not target:
+        target = name + ".polaroid.png"
     if not align in ("left", "right", "top", "bottom", "center"):
         show_error("Unknown alignment '%s'." % align)
     # Prepare our resources
