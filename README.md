@@ -35,6 +35,20 @@ Example output:
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="./examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
 
+how to use?
+-----------
+
+example usage:
+
+```console
+foo@bar:~$ polaroidme ./example/example.png .jpg --size 800 --align center --title "--crop option center"
+foo@bar:~$ feh ./example/example.polaroid.png
+foo@bar:~$ polaroidme --nocrop ./example/example.png --size 800 --title "--nocrop option"
+foo@bar:~$ feh ./example/example.polaroid.png
+```
+
+all available options:
+
 ```
 polaroidme - converts an image into vintage polaroid style
 
@@ -76,15 +90,6 @@ Options:
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 ```
 
-example usage:
-
-```console
-foo@bar:~$ polaroidme ./example/example.png .jpg --size 800 --align center --title "--crop option center"
-foo@bar:~$ feh ./example/example.polaroid.png
-foo@bar:~$ polaroidme --nocrop ./example/example.png --size 800 --title "--nocrop option"
-foo@bar:~$ feh ./example/example.polaroid.png
-```
-
 installation
 ------------
 
@@ -101,8 +106,8 @@ If you don't have [pip](https://pip.pypa.io) installed, this [Python installatio
 you through the process.
 
 
-From sources
-____________
+installation from sources
+-------------------------
 
 The sources for polaroidme can be downloaded from the [Github repo](https://github.com/s3h10r/polaroidme).
 
