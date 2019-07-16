@@ -98,6 +98,7 @@ TODO
  **0.9.2** INPROGRESS (lab-branch)
  - exports make_polaroid-function
  - adds contactsheet-script (thumbnails can be polaroids with filename )
+ - convinient argparsing (via docopt)
 
  **0.9.1**
  - argument alignment omitted if `--nocrop option` is set

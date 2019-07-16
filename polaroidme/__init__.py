@@ -1,1 +1,1 @@
-from .polaroidme import setup_globals, make_polaroid
+from .polaroidme import make_polaroid

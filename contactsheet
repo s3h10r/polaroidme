@@ -2,34 +2,41 @@
 """
 contactsheet - create a contact sheet for all images in the specified directory
 
-usage:
+Usage:
+  contactsheet <image_directory> <image_out> [--polaroid]
+  contactsheet <image_directory> <image_out> [--ratio=<{square,classic,digital,free}>] [--font=<font>] [--size=<size>] [--polaroid]
 
-  contactsheet [image_directory] [aspect_ratio_cs] [size_of_thumbnails]
 
-where
+Example:
+  contactsheet ./examples/ testsheet.png --ratio sqaure --font=/tmp/fonts/contrast.ttf
 
-  image_directory    the directory in which the images reside
+Where:
+  image_directory    The directory in which the images reside
+  image_out          Filename of the created contact sheet
 
-  aspect_ratio_cs    the aspect ratio of the contact sheet. one of
-                     'square' (1:1), 'classic' (2:3) or 'digital' (3:4).
-                     the value 'free' means "auto-optimize". (default="digital")
+Options:
+  -f, --font=<f>    Specify (ttf-)font to use (full path!)
+  -r, --ratio=<r>   The aspect ratio of the contact sheet. One of
+                    'square' (1:1), 'classic' (2:3) or 'digital' (3:4).
+                    The value 'free' means "auto-optimize".
+                    (default="digital")
+  -s, --size=<s>    Specifiy width of thumbnail in pixels (default=200)
+  -p, --polaroid    Generates Thumbnails with Polaroid-style and filename
+                    as caption.
 
-  size_of_thumbnail  width of thumbnail in pixels (default=200)
+  -h, --help        Print this.
+      --version     Print version.
 
-Latest version
-
-  The `latest version is available on github <https://github.com/s3h10r/polaroidme>`_
-
-Current Version
+The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
 """
 TODO
 ====
-[ ] selecting font by using an argument --font 
 [ ] color
 [ ] support for watermark / sign /steganographie ;)
 0.4.0
 [X] supports show filename as caption on thumbnail -> using polaroid.make_polaroid()
+[X] selecting font by using an argument --font
 0.2.0
 [X] "self-optimizing" grid layout (no empty slots) -> aspect_ratio_cs='free'
 """
@@ -38,8 +45,8 @@ import sys
 import logging
 
 from polaroidme import make_polaroid
-#from polaroidme import setup_globals, make_polaroid
 
+from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
 # --- configure logging
@@ -62,7 +69,7 @@ def make_contact_sheet( fnames = None, ncols = 4,nrows = 4,
                         photow = 360,photoh = 400,
                         marl = 0, mart = 0, marr = 0, marb = 0,
                         padding = 0,
-                        thumb_as_polaroid=True, f_font = None ):
+                        thumb_as_polaroid=False, f_font = None ):
     """
     Make a contact sheet from a list of filenames:
 
@@ -193,6 +200,7 @@ def get_optimized_grid(n_elements):
 
 
 if __name__ == '__main__':
+    args = docopt(__doc__, version=__version__)
     # define possible aspect ratios of contact sheet
     aspect_ratio = {
         'square'  : (1,1),
@@ -200,18 +208,22 @@ if __name__ == '__main__':
         'digital' : (3,4), # apsc
         'free'    : None   # auto-optimized
     }
-    ar_name = 'square' # default
-    dir = None
-    if len(sys.argv) < 2:
-        print(__doc__)
-        print("  v" + '.'.join([str(el) for el in __version__]))
-        sys.exit(0)
-    elif len(sys.argv) >= 3:
-        ar_name = sys.argv[2]
-        dir = sys.argv[1]
-    elif len(sys.argv) >= 2:
-        dir = sys.argv[1]
-
+    # --- parsing arguments
+    dir = args['<image_directory>']
+    f_out = args['<image_out>']
+    ar_name = args['--ratio']
+    if not ar_name:
+        ar_name = 'digital'
+    thumb_size = args['--size']
+    as_polaroid = args['--polaroid']
+    if not thumb_size:
+        thumb_size = THUMBNAIL_SIZE
+    else:
+        thumb_size = int(thumb_size)
+    f_font = args['--font']
+    if not f_font:
+        f_font = FONT_DEFAULT
+    #---
     fqfn_images = get_images_in_dir(dir, traversal=True)
     nr_images = len(fqfn_images)
     ncols = None
@@ -257,7 +269,7 @@ if __name__ == '__main__':
     # set size of thumbnails
     photow = THUMBNAIL_SIZE; photoh = photow
     if len(sys.argv) >= 4:
-        photow = int(sys.argv[3])
+        photow = thumb_size
         photoh = photow
     log.info("photow {} / photoh {} = {} || ar_w {} / ar_h {} = {}".format(photow, photoh, photow / photoh, ar_cs[1], ar_cs[0], ar_cs[1] / ar_cs[0]))
     padding = int(photow / 8)
@@ -275,7 +287,6 @@ if __name__ == '__main__':
     img = make_contact_sheet(fqfn_images, ncols = ncols, nrows = nrows,
         photow = photow, photoh = photoh, padding=padding,
         marl=mar, mart=mar, marr=mar, marb = mar,
-        thumb_as_polaroid = True, f_font = "fonts/arial_narrow_7.ttf"
-)
-
-    img.save("contactsheet.png")
+        thumb_as_polaroid = as_polaroid, f_font = f_font
+        )
+    img.save(f_out)
