@@ -4,10 +4,11 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
-  polaroidme <source-image> [--output=<filename>]
-  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>]
-  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>]
+  polaroidme <source-image> [--output=<filename>] [--title=<str>]
+  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>]
+  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>]
+  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
 
 
 Where:
@@ -309,7 +310,7 @@ if __name__ == '__main__':
     size = IMAGE_SIZE
     target = None
     align = "center"
-    caption = None
+    title = None
     f_font = None
     # process options
     source = args['<source-image>']
@@ -326,9 +327,11 @@ if __name__ == '__main__':
     if args['--alignment']: # only used if --crop
         align = args['--alignment']
     if args['--title']:
-        caption = args['title']
+        title = args['--title']
     if args['--font']:
-        f_font = args['font']
+        f_font = args['--font']
+    else:
+        f_font = RESOURCE_FONT
     # ---
     setup_globals(size)
     # heree we go...
@@ -339,7 +342,7 @@ if __name__ == '__main__':
     if not align in ("left", "right", "top", "bottom", "center"):
         show_error("Unknown alignment '%s'." % align)
     # Prepare our resources
-    f_font = get_resource_file(RESOURCE_FONT)
+    f_font = get_resource_file(f_font)
     font_size = RESOURCE_FONT_SIZE
 
     # finally create the polaroid.

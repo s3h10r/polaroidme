@@ -29,7 +29,7 @@ _`examples`: https://github.com/s3h10r/polaroidme/blob/master/README.md
 
 setuptools.setup(
      name='polaroidme',
-     version='0.9.1',
+     version='0.9.2',
      scripts=['polaroidme/polaroidme'] ,
      author="Sven Hessenmüller",
      author_email="sven.hessenmueller@gmail.com",
