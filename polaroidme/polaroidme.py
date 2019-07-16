@@ -4,38 +4,46 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
+  polaroidme <source-image> [--output=<filename>]
+  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>]
+  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>]
 
-  polaroidme [options] source-image [size] [alignment] [title]
 
 Where:
+  source-image    Name of the image file to convert.
+  size            Size of the picture-part of the polaroid in pixels (default=800)
+  alignment       Used for cropping - specifies the portion of the image
+                  to include in the final output.
+                  One of 'top', 'left', 'bottom', 'right' or 'center'.
+                  'top' and 'left' are synonomous as are 'bottom' and
+                  'right'. (default="center").
+                  Not of any use if --nocrop option is set.
+  title           Defines an optional caption to be displayed at the
+                  bottom of the image. (default=None)
+  font            Specify (ttf-)font to use (full path!)
 
-  source-image  name of the image file to transform. If no extension is
-                specified .jpg is assumed.
-  size          size of the picture part of the polaroid (default=800)
-  alignment     This specifies the portion (crop) of the image to include in the final
-                output. One of 'top', 'left', 'bottom', 'right' or 'center'.
-                'top' and 'left' are synonomous as are 'bottom' and
-                'right'. (default="center"). Omitted if --nocrop option is set.
-  title         If specified defines the caption to be displayed at the
-                bottom of the image. (default=None)
+Options:
+  --nocrop         Rescale the image to fit fullframe in the final output
+                   (default="--crop"). btw. alignment is ignored if option is set.
+  -o, --output=<s> Defines the name of the outputfile. If omitted a filename
+                   based on the original will be used - example:
+                   'test.polaroid.png' will be used as filename if input-file is 'test.png'
+  -f, --font=<f>   Specify (ttf-)font to use (full path!)
+  -s, --size=<s>   Specifiy width of thumbnail in pixels (default=200)
+  --clockwise      Rotate the image clockwise before processing
+  --anticlockwise  Rotate the image anti-clockwise before processing
 
-Available options are:
+  -h, --help       Print this.
+      --version    Print version.
 
-  --nocrop        Rescale the image to fit fullframe in the final output
-                  (default="--crop"). btw. alignment is ignored if option is set.
-  --clockwise     Rotate the image clockwise before processing
-  --anticlockwise Rotate the image anti-clockwise before processing
-
-Latest version
-
-  The `latest version is available on github <https://github.com/s3h10r/polaroidme>`_
-
-Current Version
+The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
 import os
 import site
 import sys
 import logging
+from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
 # --- configure logging
@@ -132,6 +140,9 @@ def setup_globals(size):
 
 def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE):
     """
+    Converts an image into polaroid-style. This is the main-function of the module
+    and it is exposed. It can be imported and used by any Python-Script.
+
     returns
         PIL image instance
     """
@@ -145,11 +156,11 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
     image_ratio = float(float(h)/float(w))
     log.debug("image_ratio: %f size_w: %i size_h: %i" % (image_ratio, w, h))
     if round(image_ratio, 1) >= 1.3: # is_portrait
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_portrait'))
+        log.info("source image ratio is %f (%s)" % (image_ratio, 'is_portrait'))
     elif round(image_ratio, 1) == 1.0: # is_square
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
+        log.info("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
     elif round(image_ratio, 1) <= 0.8: # is_landscape
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
+        log.info("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
     if options['crop']:
         img = crop_image_to_square(img, align)
     else:
@@ -261,7 +272,6 @@ def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = 
     draw.rectangle((IMAGE_LEFT - BORDER_SIZE, IMAGE_TOP - BORDER_SIZE, IMAGE_LEFT + IMAGE_SIZE + BORDER_SIZE, IMAGE_TOP + IMAGE_SIZE + BORDER_SIZE), fill = COLOR_BORDER)
     # Add the source image
     frame.paste(image, (IMAGE_LEFT, IMAGE_TOP))
-    # All done
     return frame
 
 def add_text(image, title = None, description = None, f_font = None, font_size = None):
@@ -295,47 +305,36 @@ def add_text(image, title = None, description = None, f_font = None, font_size =
 
 
 if __name__ == '__main__':
-    options = { 'rotate': None, 'crop' : True }
+    # --- process args & options
+    args = docopt(__doc__, version=__version__)
+    options = { 'rotate': None, 'crop' : True } # defaults
     source = None
     size = IMAGE_SIZE
     target = None
     align = "center"
     caption = None
+    f_font = None
     # process options
-    option, args = get_option(sys.argv[1:])
-    while option is not None:
-        if option in ("clockwise", "anticlockwise"):
-            options['rotate'] = option
-        elif option in ("crop", "nocrop"):
-            if option == "nocrop":
-                options['crop'] = False
-            else:
-                options['crop'] = True
-        else:
-            show_error("Unrecognised option --%s" % option)
-        option, args = get_option(args)
-    # process arguments
-    source, args = get_argument(args)
-    if source is None:
-        print(__doc__)
-        print("  v" + '.'.join([str(el) for el in __version__]))
-        sys.exit()
-    size, args = get_argument(args)
-    if size:
-        size = int(size)
-    else:
-        size = IMAGE_SIZE
-    if options['crop']: # omitted if --nocrop
-        align_tmp, args = get_argument(args)
-        if align_tmp:
-            align = align_tmp
-    caption, args = get_argument(args)
-    if len(args) != 0:
-        print(__doc__)
-        print("  v" + '.'.join([str(el) for el in __version__]))
-        sys.exit()
+    source = args['<source-image>']
+    if args['--clockwise']:
+        option['rotate'] = 'clockwise'
+    elif args['--anticlock']:
+        option['rotate'] = 'anticlockwise'
+    if args['--crop']:
+        option['crop'] = True
+    elif args['--nocrop']:
+        option['crop'] = False
+    if args['--size']:
+        size = int(args['--size'])
+    if args['--alignment']: # only used if --crop
+        align = args['--alignment']
+    if args['--title']:
+        caption = args['title']
+    if args['--font']:
+        f_font = args['font']
+    # ---
     setup_globals(size)
-    log.debug("here we go...")
+    # heree we go...
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
         show_error("Source file '%s' does not exist." % source)
@@ -346,30 +345,10 @@ if __name__ == '__main__':
     f_font = get_resource_file(RESOURCE_FONT)
     font_size = RESOURCE_FONT_SIZE
 
-    # ---> TODO use make_polaroid here instead ...
-    img_in = Image.open(source)
-    img_in.load()
-    img = rotate_image(img_in, options['rotate'])
-    [w, h] = img.size
-    # Determine ratio of image length to width to
-    # determine oriantation (portrait, landscape or square)
-    image_ratio = float(float(h)/float(w))
-    log.debug("image_ratio: %f size_w: %i size_h: %i" % (image_ratio, w, h))
-    if round(image_ratio, 1) >= 1.3: # is_portrait
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_portrait'))
-    elif round(image_ratio, 1) == 1.0: # is_square
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_square'))
-    elif round(image_ratio, 1) <= 0.8: # is_landscape
-        print("source image ratio is %f (%s)" % (image_ratio, 'is_landscape'))
-    if options['crop']:
-        img = crop_image_to_square(img, align)
-    else:
-        img = scale_image_to_square(img)
-    img = scale_image(img, size)
-    img = add_frame(img)
-    description = None
-    img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
-
+    # finally create the polaroid.
+    img = make_polaroid(
+        source = source, size = size, options = options, align =align,
+        title = title, f_font = f_font, font_size = RESOURCE_FONT_SIZE)
     # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     print(target)

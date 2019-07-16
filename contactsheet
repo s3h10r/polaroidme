@@ -43,9 +43,7 @@ TODO
 import os
 import sys
 import logging
-
 from polaroidme import make_polaroid
-
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -283,7 +281,6 @@ if __name__ == '__main__':
     isize = (ncols*photow+marw+padw,nrows*photoh+marh+padh)
     # ---
     log.info("Contact Sheet size: {}".format(isize))
-#    img = make_contact_sheet(fqfn_images, ncols = 1, nrows = 7,
     img = make_contact_sheet(fqfn_images, ncols = ncols, nrows = nrows,
         photow = photow, photoh = photoh, padding=padding,
         marl=mar, mart=mar, marr=mar, marb = mar,
