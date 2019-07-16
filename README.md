@@ -43,10 +43,26 @@ your needs take a look at the project's github-repo and check out the
 
 Contributions are welcome, and they are greatly appreciated!
 
-More example output:
+installation
+------------
+
+To install polaroidme, run this command in your terminal:
+
+```console
+    $ pip install polaroidme
+```
+
+This is the preferred method to install polaroidme, as it will always install
+the most recent stable release.
+
+If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
+you through the process.
+
+more example output
+-------------------
 
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
-<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
+<img src="/examples/" width="48%"></img>
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="./examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
 
@@ -74,7 +90,7 @@ To view the picture from the console you can use [feh](https://feh.finalrewind.o
 or any image viewer of your choice:
 
 ```
-foo@bar:~$ feh /tmp/example.polaroid.png
+foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
 Use `polaroidme --help` to get a description of all available options:
@@ -117,22 +133,6 @@ Options:
   -h, --help       Print this.
       --version    Print version.
 ```
-
-installation
-------------
-
-To install polaroidme, run this command in your terminal:
-
-```console
-    $ pip install polaroidme
-```
-
-This is the preferred method to install polaroidme, as it will always install
-the most recent stable release.
-
-If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
-you through the process.
-
 
 installation from sources
 -------------------------
