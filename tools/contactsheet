@@ -28,10 +28,12 @@ Options:
       --version     Print version.
 
 TODO
-  --sort-by=<dt>    Sort the Images by 'datetime' or 'filename (default).
-  --reverse         Revert sort-by
-  --time-from=<ts>
-  --time-to=<ts>
+  --sort-by=<dt>         Sort the Images by 'exif_datetime' or 'filename' (default), 'color'.
+  --reverse              Reverts sort-by result
+  --exif-time-from=<ts>  Only include if timestamp of image is >= this value
+  --exif-time-to=<ts>    and <= that value. (relies on EXIF)
+  --include-noexif       If filtering or sort by exif-data is defined but Image has
+                         no EXIF about criteria include it (default = exclude it)
   --random-pick <n>
 
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
@@ -40,6 +42,7 @@ The `latest version is available on github: https://github.com/s3h10r/polaroidme
 TODOs
 =======
 0.4.2
+[ ] sorting & filtering based on EXIF
 [ ] random selection of N pictures based on EXIF data https://github.com/s3h10r/polaroidme/issues/2
 
 0.4.0
@@ -49,11 +52,9 @@ TODOs
 [X] "self-optimizing" grid layout (no empty slots) -> aspect_ratio_cs='free'
 """
 
-import os
 import sys
 import logging
-import json
-from polaroidme import make_polaroid, get_exif
+from polaroidme import make_polaroid, get_exif, get_images_in_dir
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -151,22 +152,6 @@ def make_contact_sheet( fnames = None, ncols = 4,nrows = 4,
             break
 
     return inew
-
-def get_images_in_dir(directory=None, suffix=('jpg','jpeg','png','gif', 'bmp', 'tif','tiff'),traversal=True):
-    res = []
-    if traversal:
-        for root, dirs, files in os.walk(directory):
-            for file in files:
-                if file.endswith(suffix):
-                    fqfn = os.path.join(root, file)
-                    res.append(fqfn)
-                    log.debug("file match: {}".format(fqfn))
-    else:
-        for file in os.listdir(directory):
-            if file.endswith(suffix):
-                fqfn = os.path.join(directory, file)
-                res.append(fqfn)
-    return res
 
 def euclid (a,b): #ggt
     if (b == 0) :
