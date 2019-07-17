@@ -27,11 +27,21 @@ Options:
   -h, --help        Print this.
       --version     Print version.
 
+TODO
+  --sort-by=<dt>    Sort the Images by 'datetime' or 'filename (default).
+  --reverse         Revert sort-by
+  --time-from=<ts>
+  --time-to=<ts>
+  --random-pick <n>
+
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
 """
 TODOs
 =======
+0.4.2
+[ ] random selection of N pictures based on EXIF data https://github.com/s3h10r/polaroidme/issues/2
+
 0.4.0
 [X] supports show filename as caption on thumbnail -> using polaroid.make_polaroid()
 [X] selecting font by using an argument --font
@@ -42,7 +52,8 @@ TODOs
 import os
 import sys
 import logging
-from polaroidme import make_polaroid
+import json
+from polaroidme import make_polaroid, get_exif
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -58,7 +69,7 @@ log.addHandler(handler)
 THUMBNAIL_SIZE = 200 #default
 FONT_DEFAULT   = "fonts/arial_narrow_7.ttf"
 
-__version__ = (0,4,0)
+__version__ = (0,4,1)
 __license__ = "MIT"
 
 
@@ -286,3 +297,11 @@ if __name__ == '__main__':
         thumb_as_polaroid = as_polaroid, f_font = f_font
         )
     img.save(f_out)
+
+    # --- TODO
+    for fn in fqfn_images:
+        exif_data = get_exif(fn)
+        if ('EXIF DateTimeOriginal') in exif_data:
+            log.info("exif_data about DateTime: {}; {}; {}".format(fn, exif_data['Image DateTime'], exif_data['EXIF DateTimeOriginal']))
+        else:
+            log.warning("exif_data about DateTime unavailable: {}; ;".format(fn))

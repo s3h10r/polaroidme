@@ -45,7 +45,8 @@ import site
 import sys
 import logging
 from docopt import docopt
-from PIL import Image, ImageDraw, ImageFont
+import exifread
+from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -278,6 +279,25 @@ def add_text(image, title = None, description = None, f_font = None, font_size =
     draw.text(((IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT - width) / 2, IMAGE_SIZE + IMAGE_TOP + ((IMAGE_BOTTOM - height) / 2)), title, font = font_title, fill = COLOR_TEXT_TITLE)
     return image
 
+def get_exif(source):
+    """
+    TODO
+    https://github.com/s3h10r/polaroidme/issues/2
+    """
+    if isinstance(source, Image.Image):
+        if hasattr(source, filename):
+            source = source.filename
+        else:
+            raise Exception("Sorry, source is an Image-instance and i could not determine the filename. Please geve me a FQFN instead.")
+    elif not isinstance(source, str):
+        raise Exception("Ouch. Sorry, source must be a valid filename.")
+    with open(source, 'rb') as f:
+        exif_data = exifread.process_file(f, details=True)
+    for tag in exif_data:
+        log.debug("exif_data has key: %s" % (tag))
+        if tag in ('Image DateTime', 'EXIF DateTimeOriginal'):
+            log.debug("EXIF data of %s for key %s is %s" % (source, tag, exif_data[tag]))
+    return exif_data
 
 
 if __name__ == '__main__':
