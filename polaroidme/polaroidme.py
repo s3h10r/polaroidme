@@ -73,7 +73,7 @@ RESOURCE_FONT      = "fonts/default.ttf"
 RESOURCE_FONT_SIZE = 142
 PACKAGE_NAME = "polaroidme"
 
-__version__ = (0,9,2)
+__version__ = (0,9,3)
 
 # --- argparsing helpers etc
 def get_resource_file(basefile):
@@ -90,28 +90,6 @@ def get_resource_file(basefile):
                 return fqn
                 break
     return fqn
-
-def get_option(args):
-    """
-    Check the argument list for an option (starting with '--').
-
-    Returns the adjusted argument list and the option found.
-    """
-    if len(args) == 0:
-        return None, args
-    if args[0][:2] == "--":
-        return args[0][2:], args[1:]
-    return None, args
-
-def get_argument(args):
-    """
-    Get the next argument from the command line parameters
-
-    Returns the adjusted argument list and the value of the argument.
-    """
-    if len(args) == 0:
-        return None, args
-    return args[0], args[1:]
 
 def show_error(msg):
     """
