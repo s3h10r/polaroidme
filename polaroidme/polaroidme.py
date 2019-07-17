@@ -291,6 +291,8 @@ if __name__ == '__main__':
     f_font = None
     # process options
     source = args['<source-image>']
+    if source.lower() in('-', 'stdin'):
+        raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
