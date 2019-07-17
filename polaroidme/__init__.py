@@ -5,4 +5,4 @@ __license__ = "MIT"
 from .polaroidme import __version__
 from .polaroidme import add_frame
 from .polaroidme import make_polaroid
-from .polaroidme import get_exif
+from .helpers import get_exif
