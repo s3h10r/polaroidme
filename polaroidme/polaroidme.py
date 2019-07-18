@@ -158,10 +158,14 @@ def setup_globals(size, configfile=None, template = None, show = True):
         tpl.close()
 
         IMAGE_SIZE = size
+        #FIXMEP1 alignment of text is wrong...
+#        IMAGE_TOP    = int(IMAGE_SIZE / 16)
         IMAGE_TOP = box[1]
         IMAGE_BOTTOM = tpl_y - (IMAGE_TOP + h)
         IMAGE_LEFT = box[0]
-        IMAGE_RIGHT = tpl_x - (IMAGE_LEFT + w)
+        IMAGE_RIGHT = IMAGE_LEFT
+#        IMAGE_RIGHT = tpl_x - (IMAGE_LEFT + w)
+
         BORDER_SIZE  = 3
         RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.2))
 
@@ -171,6 +175,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'IMAGE_SIZE' : IMAGE_SIZE,
         'IMAGE_TOP' : IMAGE_TOP,
         'IMAGE_BOTTOM' : IMAGE_BOTTOM,
+        'IMAGE_LEFT' : IMAGE_LEFT,
         'IMAGE_RIGHT' : IMAGE_RIGHT,
         'BORDER_SIZE' : BORDER_SIZE,
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
@@ -436,8 +441,7 @@ if __name__ == '__main__':
         show_error("Unknown alignment '%s'." % align)
     # Prepare our resources
     f_font = get_resource_file(f_font)
-#    font_size = IMAGE_BOTTOM
-    font_size = RESOURCE_FONT_SIZE
+    font_size = IMAGE_BOTTOM
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
@@ -445,5 +449,13 @@ if __name__ == '__main__':
         template = template)
     # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
-    print(target)
+    # ---  DEVONLY - TODO --max-size (x,y)
+    scale_factor = 0.25
+    x = int(img.width * scale_factor)
+    y = int(img.height * scale_factor)
+    resized = img.resize((x,y),Image.ANTIALIAS)
+    img.save("resized-out-" + target)
+    print("resized-out-" + target)
+    # ---
     img.save(target)
+    print(target)
