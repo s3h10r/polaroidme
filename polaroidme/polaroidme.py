@@ -142,7 +142,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
         for k in TEMPLATE_BOXES:
             TEMPLATE_BOXES[k] = [int(round(f)) for f in TEMPLATE_BOXES[k]]
         # ---
-        box = TEMPLATE_BOXES[k]
+        box = TEMPLATE_BOXES[os.path.basename(template)]
         w = box[2] - box[0]
         h = box[3] - box[1]
         if w != h:
@@ -151,21 +151,18 @@ def setup_globals(size, configfile=None, template = None, show = True):
             size = w
         else:
             size = h
+        IMAGE_SIZE = size
         # overwrite the above calculated  _TOP,_BOTTOM, ... values
         # by the one our template "dictates"
         tpl = Image.open(template)
         tpl_x, tpl_y = tpl.size
         tpl.close()
 
-        IMAGE_SIZE = size
         #FIXMEP1 alignment of text is wrong...
-#        IMAGE_TOP    = int(IMAGE_SIZE / 16)
         IMAGE_TOP = box[1]
-        IMAGE_BOTTOM = tpl_y - (IMAGE_TOP + h)
+        IMAGE_BOTTOM = tpl_y - (IMAGE_TOP + IMAGE_SIZE)
         IMAGE_LEFT = box[0]
-        IMAGE_RIGHT = IMAGE_LEFT
-#        IMAGE_RIGHT = tpl_x - (IMAGE_LEFT + w)
-
+        IMAGE_RIGHT = tpl_x - (IMAGE_LEFT + w)
         BORDER_SIZE  = 3
         RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.2))
 
@@ -179,12 +176,13 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'IMAGE_RIGHT' : IMAGE_RIGHT,
         'BORDER_SIZE' : BORDER_SIZE,
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
-        'TEMPLATES' : TEMPLATE_BOXES,
+        'TEMPLATE_KEY' : os.path.basename(template),
+        'TEMPLATE_VALUE' : TEMPLATE_BOXES[os.path.basename(template)],
         }
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
-def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE, template = None):
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None):
     """
     Converts an image into polaroid-style. This is the main-function of the module
     and it is exposed. It can be imported and used by any Python-Script.
@@ -350,9 +348,10 @@ def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = 
     frame.paste(image, (IMAGE_LEFT, IMAGE_TOP))
     return frame
 
-def add_text(image, title = None, description = None, f_font = None, font_size = None):
+def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, font_size = RESOURCE_FONT_SIZE):
     """
-    adds the title & description to the image
+    adds the title to the image
+    description is unused at the moment 
     """
     if title is None:
         return image
