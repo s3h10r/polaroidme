@@ -4,7 +4,7 @@ contactsheet - create a contact sheet for all images in the specified directory
 
 Usage:
   contactsheet <source> <image_out> [--no-meta] [--polaroid]
-  contactsheet <source> <image_out> [--sort-by=<str>] [--polaroid] [--nometa]
+  contactsheet <source> <image_out> [--sort-by=<str>] [--polaroid] [--nometa] [--reverse]
   contactsheet <source> <image_out> [--ratio=<{square,classic,digital,free}>] [--font=<font>] [--size-thumb=<px>] [--sort-by <str>] [--reverse] [--polaroid] [--nometa]
 
 
@@ -23,6 +23,7 @@ Options:
                         'square' (1:1), 'classic' (2:3) or 'digital' (3:4).
                         The value 'free' means "auto-optimize" (experimental).
                         (default="digital")
+  --reverse             Reverts sort-by result.
   --sort-by=<str>       Sort the Images by given criteria. One of 'exif_time', 'time'.
                         (in future versions also 'filename', 'mtime', 'color', ...)
   -s, --size-thumb=<s>  Specifiy width of thumbnail in pixels (default=200)
@@ -33,7 +34,6 @@ Options:
       --version         Print version.
 
 TODO
-  --reverse              Reverts sort-by result.
   --exif-time-from=<ts>  Only include if timestamp of image is >= this value
   --exif-time-to=<ts>    and <= that value. (relies on EXIF)
   --include-noexif       If filtering or sort by exif-data is defined but Image has
@@ -42,6 +42,7 @@ TODO
   --random-pick <n>
   --size                 Limit the size of contactsheet
                          => Calculate --size-thumbnail accordingly
+  --html                 Create a html-output (bs4, lightbox).
 
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
@@ -58,6 +59,9 @@ TODOs
 [ ] measure processing time
 [ ] generate ()& output) some stats: (nr_images, processing time, excluded images, sumSize of input, min/max/average image-size...)
 
+0.4.4
+[ ] option to use high-res scanned blank Polaroid frames as template https://github.com/s3h10r/polaroidme/issues/3
+
 0.4.2
 [ ] change usage, add --input <file>|- # option to read from stdin (so the filtering on file-attributes can be done via find etc.)
 [P] sorting based on EXIF
@@ -73,8 +77,8 @@ TODOs
 import sys
 import logging
 import os
-from polaroidme import make_polaroid, get_exif, get_images_in_dir
-from polaroidme import sort_images_by_time
+from polaroidme import make_polaroid
+from polaroidme import get_images_in_dir, get_exif, sort_images_by_time
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -253,18 +257,22 @@ if __name__ == '__main__':
     if not source.lower() in('-', 'stdin'):
         fqfn_images = get_images_in_dir(source, traversal=True)
     # --- #INPROGRESS sort and filter ...
-    if args['--sort-by'] in ('exif_time','time'):
+    sort_reverse = False
+    meta_sorted = None
+    if args['--reverse']:
+        sort_reverse = True
+    if args['--sort-by'] in ('exif_time', 'exif_date', 'time', 'date'):
         # iterate over the list of files
         # get meta infos and sort by it
         # kick out images with no infos available for our criteria
         # (if exclude_on_no_data = True)
-        fqfn_images_sorted, meta_sorted, nodata = sort_images_by_time(fqfn_images, exclude_on_no_data = True, return_meta = True)
+        fqfn_images_sorted, meta_sorted, nodata = sort_images_by_time(fqfn_images, exclude_on_no_data = True, reverse = sort_reverse, return_meta = True)
         for k,v in meta_sorted.items():
             log.debug(k,v)
         fqfn_images = fqfn_images_sorted
     # ---
     add_text = None
-    if not args['--nometa']:
+    if not args['--nometa'] and args['--sort-by']:
         add_meta = [str(meta_sorted[fn]) + " " + os.path.basename(fn) for fn in fqfn_images]
         add_text = add_meta
     #---

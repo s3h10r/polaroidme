@@ -56,10 +56,10 @@ def get_images_in_dir(directory=None, suffix=('jpg','jpeg','png','gif', 'bmp', '
 def sort_images_by_name(images):
     pass
 
-def sort_images_by_time(images, exclude_on_no_data = True, return_meta = False):
-    return sort_images_by_original_ctime(images, exclude_on_no_data = exclude_on_no_data, return_meta = return_meta)
+def sort_images_by_time(images, exclude_on_no_data = True, reverse= True, return_meta = False):
+    return sort_images_by_original_ctime(images, exclude_on_no_data = exclude_on_no_data, reverse = reverse, return_meta = return_meta)
 
-def sort_images_by_original_ctime(images, exclude_on_no_data = True, return_meta = True):
+def sort_images_by_original_ctime(images, exclude_on_no_data = True, reverse = True, return_meta = True):
     """
     """
     DATA_UNAVAIL = []
@@ -80,7 +80,7 @@ def sort_images_by_original_ctime(images, exclude_on_no_data = True, return_meta
     for k,v in meta.items():
         if (k == None) or (v == None):
             log.critical("Oooouch. This should not happen... :-/ %s,%s" % (k,v))
-    meta_sorted = OrderedDict(sorted(meta.items(), key = itemgetter(1), reverse = True))
+    meta_sorted = OrderedDict(sorted(meta.items(), key = itemgetter(1), reverse = reverse))
     sorted_list = meta_sorted.keys()
     sorted_list = list(sorted_list)
     if not exclude_on_no_data:
