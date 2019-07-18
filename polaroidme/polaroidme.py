@@ -4,11 +4,11 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
-  polaroidme <source-image> [--output=<filename>] [--title=<str>]
-  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>]
-  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>]
-  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
+  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--template=<str>]
+  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>] [--template=<str>]
+  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>] [--template=<str>]
+  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>]
 
 
 Where:
@@ -32,6 +32,7 @@ Options:
                    'test.polaroid.png' will be used as filename if input-file is 'test.png'
   -f, --font=<f>   Specify (ttf-)font to use (full path!)
   -s, --size=<s>   Specifiy width of thumbnail in pixels (default=200)
+  --template=<t>   EXPERIMENTAL-FEATURE: Specify a template to use
   --clockwise      Rotate the image clockwise before processing
   --anticlockwise  Rotate the image anti-clockwise before processing
 
@@ -46,6 +47,9 @@ import sys
 import logging
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont, ExifTags
+
+from helpers import paste_into_template # import-statement a bit strange?
+
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -114,7 +118,7 @@ def setup_globals(size):
     BORDER_SIZE  = 3
 
 
-def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE):
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE, template = None):
     """
     Converts an image into polaroid-style. This is the main-function of the module
     and it is exposed. It can be imported and used by any Python-Script.
@@ -142,9 +146,14 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
     else:
         img = scale_image_to_square(img)
     img = scale_image(img, size)
-    img = add_frame(img)
-    description = None
-    img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
+    if template:
+        log.warning("--template is experimental!")
+        img = paste_into_template(image=img, template=template)
+        # TODO add text
+    else:
+        img = add_frame(img)
+        description = None
+        img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
     return img
 
 
@@ -289,6 +298,7 @@ if __name__ == '__main__':
     align = "center"
     title = None
     f_font = None
+    template = None
     # process options
     source = args['<source-image>']
     if source.lower() in('-', 'stdin'):
@@ -313,6 +323,8 @@ if __name__ == '__main__':
         f_font = RESOURCE_FONT
     if args['--output']:
         target = args['--output']
+    if args['--template']:
+        template = args['--template']
     # ---
     setup_globals(size)
     # heree we go...
@@ -330,7 +342,8 @@ if __name__ == '__main__':
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
-        title = title, f_font = f_font, font_size = RESOURCE_FONT_SIZE)
+        title = title, f_font = f_font, font_size = RESOURCE_FONT_SIZE,
+        template = template)
     # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     print(target)

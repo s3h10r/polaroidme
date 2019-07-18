@@ -104,3 +104,37 @@ def filter_images_by_size(images, min_size, max_size = None):
     thumbnails and junk on the fly
     """
     pass
+
+
+def paste_into_template(image = None, template = './templates/fzm-Polaroid.Frame-01.jpg', box=None):
+    """
+    """
+    template_boxes = {
+        # box = left, upper, right, lower
+        'fzm-Polaroid.Frame-01.jpg' : [618.426369561389, 531.81956699281, 4257.608395919741, 4242.358103671913],
+    }
+    for k in template_boxes:
+        template_boxes[k] = [round(f) for f in template_boxes[k]]
+    print(json.dumps(template_boxes,indent=4,sort_keys=True))
+
+    if not box:
+        box = template_boxes[os.path.basename(template)]
+    img_tpl = Image.open(template)
+
+    w = box[2] - box[0]
+    h = box[3] - box[1]
+    log.debug("box-size the picture will be pasted into is (w,h) {} {}".format(w,h))
+    region2copy = image.crop((0,0,image.size[0],image.size[1]))
+    if region2copy.size[0] > w:
+        # Downsample
+        log.info("downsampling... (good)")
+        region2copy = region2copy.resize((w,h),Image.ANTIALIAS) # FIXME verzerrung
+    else:
+        log.info("upscaling... (not so good ;)")
+        region2copy = region2copy.resize((w,h), Image.BICUBIC) # FIXME verzerrung
+
+    assert(region2copy.size == (w,h))
+    print(region2copy.size, (w,h))
+    print(region2copy.size, box)
+    img_tpl.paste(region2copy,box)
+    return img_tpl
