@@ -171,6 +171,11 @@ foo@bar:~$
 ```
 -->
 
+literature
+----------
+
+* [Programming Computer Vision with Python](http://programmingcomputervision.com/)
+
 TODO
 ----
 
