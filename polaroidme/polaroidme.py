@@ -4,11 +4,11 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
-  polaroidme <source-image> [--output=<filename>] [--title=<str>]
-  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>]
-  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>]
-  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>]
+  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>]
 
 
 Where:
@@ -32,6 +32,7 @@ Options:
                    'test.polaroid.png' will be used as filename if input-file is 'test.png'
   -f, --font=<f>   Specify (ttf-)font to use (full path!)
   -s, --size=<s>   Specifiy width of thumbnail in pixels (default=200)
+  --template=<t>   EXPERIMENTAL-FEATURE: Specify a template to use
   --clockwise      Rotate the image clockwise before processing
   --anticlockwise  Rotate the image anti-clockwise before processing
 
@@ -40,16 +41,18 @@ Options:
 
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
+import json
 import os
 import site
 import sys
 import logging
 from docopt import docopt
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ExifTags
+
 
 # --- configure logging
 log = logging.getLogger(__name__)
-log.setLevel(logging.WARNING)
+log.setLevel(logging.INFO)
 handler = logging.StreamHandler() # console-handler
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -70,10 +73,12 @@ COLOR_TEXT_TITLE = (58, 68, 163)
 COLOR_TEXT_DESCR = COLOR_TEXT_TITLE
 # Font for the caption text
 RESOURCE_FONT      = "fonts/default.ttf"
-RESOURCE_FONT_SIZE = 142
+RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.9))
 PACKAGE_NAME = "polaroidme"
 
-__version__ = (0,9,2)
+TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
+
+__version__ = (0,9,3)
 
 # --- argparsing helpers etc
 def get_resource_file(basefile):
@@ -91,28 +96,6 @@ def get_resource_file(basefile):
                 break
     return fqn
 
-def get_option(args):
-    """
-    Check the argument list for an option (starting with '--').
-
-    Returns the adjusted argument list and the option found.
-    """
-    if len(args) == 0:
-        return None, args
-    if args[0][:2] == "--":
-        return args[0][2:], args[1:]
-    return None, args
-
-def get_argument(args):
-    """
-    Get the next argument from the command line parameters
-
-    Returns the adjusted argument list and the value of the argument.
-    """
-    if len(args) == 0:
-        return None, args
-    return args[0], args[1:]
-
 def show_error(msg):
     """
     Show an error message and exit
@@ -121,22 +104,82 @@ def show_error(msg):
     sys.exit(1)
 # ---
 
-def setup_globals(size):
+def setup_globals(size, configfile=None, template = None, show = True):
     global IMAGE_SIZE
     global IMAGE_TOP
     global IMAGE_BOTTOM
     global IMAGE_LEFT
     global IMAGE_RIGHT
     global BORDER_SIZE
-    IMAGE_SIZE   = size
-    IMAGE_TOP    = int(IMAGE_SIZE / 16)
-    IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)
-    IMAGE_LEFT   = int(IMAGE_SIZE / 16)
-    IMAGE_RIGHT  = int(IMAGE_SIZE / 16)
-    BORDER_SIZE  = 3
+    global RESOURCE_FONT_SIZE
+    global TEMPLATE_BOXES
+
+    if configfile:
+        # --- load config file (if any)
+        with open(configfile) as f:
+            log.info("reading config...")
+            code = compile(f.read(), configfile, 'exec')
+            global_vars ={}
+            local_vars = {}
+            exec(code,global_vars, local_vars)
+            TEMPLATE_BOXES=local_vars['TEMPLATE_BOXES']
+    else:
+        if template:
+            log.critical("to use --template you need to define a config-file")
+            sys.exit(1)
+
+    if not template:
+        IMAGE_SIZE   = size
+        IMAGE_TOP    = int(IMAGE_SIZE / 16)
+        IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)
+        IMAGE_LEFT   = int(IMAGE_SIZE / 16)
+        IMAGE_RIGHT  = int(IMAGE_SIZE / 16)
+        BORDER_SIZE  = 3
+        RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.2))
+    else:
+        # calculate the values based on the properties of the template image
+        # --- setup templates
+        for k in TEMPLATE_BOXES:
+            TEMPLATE_BOXES[k] = [int(round(f)) for f in TEMPLATE_BOXES[k]]
+        # ---
+        box = TEMPLATE_BOXES[k]
+        w = box[2] - box[0]
+        h = box[3] - box[1]
+        if w != h:
+            log.warning("boxdefinition for template {} is not a square. w,h {},{}".format(k,w,h))
+        if w > h:
+            size = w
+        else:
+            size = h
+        # overwrite the above calculated  _TOP,_BOTTOM, ... values
+        # by the one our template "dictates"
+        tpl = Image.open(template)
+        tpl_x, tpl_y = tpl.size
+        tpl.close()
+
+        IMAGE_SIZE = size
+        IMAGE_TOP = box[1]
+        IMAGE_BOTTOM = tpl_y - (IMAGE_TOP + h)
+        IMAGE_LEFT = box[0]
+        IMAGE_RIGHT = tpl_x - (IMAGE_LEFT + w)
+        BORDER_SIZE  = 3
+        RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.2))
+
+    # --- show
+    if show:
+        SETTINGS = {
+        'IMAGE_SIZE' : IMAGE_SIZE,
+        'IMAGE_TOP' : IMAGE_TOP,
+        'IMAGE_BOTTOM' : IMAGE_BOTTOM,
+        'IMAGE_RIGHT' : IMAGE_RIGHT,
+        'BORDER_SIZE' : BORDER_SIZE,
+        'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
+        'TEMPLATES' : TEMPLATE_BOXES,
+        }
+        print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
-def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE):
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = RESOURCE_FONT_SIZE, template = None):
     """
     Converts an image into polaroid-style. This is the main-function of the module
     and it is exposed. It can be imported and used by any Python-Script.
@@ -164,10 +207,40 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
     else:
         img = scale_image_to_square(img)
     img = scale_image(img, size)
-    img = add_frame(img)
-    description = None
-    img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
+    if template:
+        log.warning("--template is experimental!")
+        img = _paste_into_template(image=img, template=template)
+        description = None
+        img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
+    else:
+        img = add_frame(img)
+        description = None
+        img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
     return img
+
+
+def _paste_into_template(image = None, template = './templates/fzm-Polaroid.Frame-01.jpg', box=None):
+    """
+    """
+    if not box:
+        box = TEMPLATE_BOXES[os.path.basename(template)]
+    img_tpl = Image.open(template)
+    w = int(box[2] - box[0])
+    h = int(box[3] - box[1])
+    log.debug("box-size the picture will be pasted into is (w,h) {} {}".format(w,h))
+    region2copy = image.crop((0,0,image.size[0],image.size[1]))
+    if region2copy.size[0] > w:
+        # Downsample
+        log.info("downsampling... (good)")
+        region2copy = region2copy.resize((w,h),Image.ANTIALIAS) # FIXMEP2 verzerrung
+    else:
+        log.info("upscaling... (not so good ;)")
+        region2copy = region2copy.resize((w,h), Image.BICUBIC) # FIXMEP2 verzerrung
+    assert(region2copy.size == (w,h))
+    #print(region2copy.size, (w,h))
+    #print(region2copy.size, box)
+    img_tpl.paste(region2copy,box)
+    return img_tpl
 
 
 def rotate_image(image, rotation):
@@ -284,7 +357,6 @@ def add_text(image, title = None, description = None, f_font = None, font_size =
         font_title = ImageFont.truetype(f_font, font_size)
     except:
         show_error("Could not load resource '%s'." % f_font)
-
     width, height = font_title.getsize(title)
     while ((width > IMAGE_SIZE) or (height > IMAGE_BOTTOM)) and (size > 0):
         size = size - 2
@@ -294,12 +366,18 @@ def add_text(image, title = None, description = None, f_font = None, font_size =
             show_error("Could not load resource '%s'." % f_font)
         font_title = ImageFont.truetype(get_resource_file(f_font), size)
         width, height = font_title.getsize(title)
+        log.debug("searching suiting font_size... trying {}".format(size))
     if (size <= 0):
         showError("Text is too large")
     draw = ImageDraw.Draw(image)
-    draw.text(((IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT - width) / 2, IMAGE_SIZE + IMAGE_TOP + ((IMAGE_BOTTOM - height) / 2)), title, font = font_title, fill = COLOR_TEXT_TITLE)
+    pos_x = (IMAGE_SIZE + IMAGE_LEFT + IMAGE_RIGHT - width) / 2
+    pos_y = IMAGE_SIZE + IMAGE_TOP + ((IMAGE_BOTTOM - height)) / 2
+    log.info("title fontsize {} pos_x, pos_y {},{}".format(size, pos_x, pos_y))
+    draw.text(
+        (pos_x, pos_y),
+        title, font = font_title, fill = COLOR_TEXT_TITLE,
+    )
     return image
-
 
 
 if __name__ == '__main__':
@@ -312,8 +390,12 @@ if __name__ == '__main__':
     align = "center"
     title = None
     f_font = None
+    template = None
+    configfile = None
     # process options
     source = args['<source-image>']
+    if source.lower() in('-', 'stdin'):
+        raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
@@ -334,8 +416,16 @@ if __name__ == '__main__':
         f_font = RESOURCE_FONT
     if args['--output']:
         target = args['--output']
+    if args['--template']:
+        template = args['--template']
+
+    if args['--config']:
+        configfile = args['--config']
     # ---
-    setup_globals(size)
+    if template:
+        size = None # needs to be calculated
+    setup_globals(size, configfile, template)
+    size = IMAGE_SIZE
     # heree we go...
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
@@ -346,12 +436,13 @@ if __name__ == '__main__':
         show_error("Unknown alignment '%s'." % align)
     # Prepare our resources
     f_font = get_resource_file(f_font)
+#    font_size = IMAGE_BOTTOM
     font_size = RESOURCE_FONT_SIZE
-
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
-        title = title, f_font = f_font, font_size = RESOURCE_FONT_SIZE)
+        title = title, f_font = f_font, font_size = font_size,
+        template = template)
     # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     print(target)
