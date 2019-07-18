@@ -4,11 +4,12 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
-  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--template=<str>] [--config=<str>]
-  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>] [--template=<str>] [--config=<str>]
-  polaroidme <source-image> [--size=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>] [--template=<str>] [--config=<str>]
-  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--size-thumb=<n>] [--max-size=<w>] [--config=<str>]
+  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--size-thumb=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>]
+  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>]
+  polaroidme <source-image> [--size-thumb=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>] [--template=<str>] [--config=<str>] [--max-size=<w>]
+  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size-thumb=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>] [--max-size=<w>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size-thumb=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>] [--max-size=<w>]
 
 
 Where:
@@ -31,7 +32,8 @@ Options:
                    based on the original will be used - example:
                    'test.polaroid.png' will be used as filename if input-file is 'test.png'
   -f, --font=<f>   Specify (ttf-)font to use (full path!)
-  -s, --size=<s>   Specifiy width of thumbnail in pixels (default=200)
+  --size-thumb=<s>   Specifiy width of thumbnail in pixels (default=200)
+  --max-size=<w>   Sets maximum width of the created contactsheet
   --template=<t>   EXPERIMENTAL-FEATURE: Specify a template to use
   --clockwise      Rotate the image clockwise before processing
   --anticlockwise  Rotate the image anti-clockwise before processing
@@ -60,11 +62,11 @@ log.addHandler(handler)
 # ---
 
 # Image size constraints
-IMAGE_SIZE   = 800
-IMAGE_TOP    = int(IMAGE_SIZE / 16)
-IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)
-IMAGE_LEFT   = int(IMAGE_SIZE / 16)
-IMAGE_RIGHT  = int(IMAGE_SIZE / 16)
+IMAGE_SIZE   = 800                      # the thumbnail size (= the inner picture)
+IMAGE_TOP    = int(IMAGE_SIZE / 16)     # added space on top
+IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)  # added space on bottom
+IMAGE_LEFT   = int(IMAGE_SIZE / 16)     # ...
+IMAGE_RIGHT  = int(IMAGE_SIZE / 16)     # ...
 BORDER_SIZE  = 3
 # Colors
 COLOR_FRAME   = (237, 243, 214)
@@ -176,9 +178,12 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'IMAGE_RIGHT' : IMAGE_RIGHT,
         'BORDER_SIZE' : BORDER_SIZE,
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
-        'TEMPLATE_KEY' : os.path.basename(template),
-        'TEMPLATE_VALUE' : TEMPLATE_BOXES[os.path.basename(template)],
+        'TEMPLATE_KEY' : template,
+        'TEMPLATE_VALUE': None,# we fill this if template ist != None
         }
+        if template:
+            SETTINGS['TEMPLATE_KEY'] = os.path.basename(template),
+            SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(template)],
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
@@ -351,7 +356,7 @@ def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = 
 def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, font_size = RESOURCE_FONT_SIZE):
     """
     adds the title to the image
-    description is unused at the moment 
+    description is unused at the moment
     """
     if title is None:
         return image
@@ -387,15 +392,17 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
 if __name__ == '__main__':
     # --- process args & options
     args = docopt(__doc__, version=__version__)
+    print(args)
     options = { 'rotate': None, 'crop' : True } # defaults
     source = None
-    size = IMAGE_SIZE
+    size = IMAGE_SIZE # size of thumbnail! (not the contactsheet)
     target = None
     align = "center"
     title = None
     f_font = None
     template = None
     configfile = None
+    max_size = None # max size (width) of the contactsheet
     # process options
     source = args['<source-image>']
     if source.lower() in('-', 'stdin'):
@@ -408,8 +415,8 @@ if __name__ == '__main__':
         option['crop'] = True
     elif args['--nocrop']:
         option['crop'] = False
-    if args['--size']:
-        size = int(args['--size'])
+    if args['--size-thumb']:
+        size = int(args['--size-thumb'])
     if args['--alignment']: # only used if --crop
         align = args['--alignment']
     if args['--title']:
@@ -430,6 +437,8 @@ if __name__ == '__main__':
         size = None # needs to be calculated
     setup_globals(size, configfile, template)
     size = IMAGE_SIZE
+    if args['--max-size']:
+        max_size = int(args['--max-size'])
     # heree we go...
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
@@ -446,15 +455,20 @@ if __name__ == '__main__':
         source = source, size = size, options = options, align =align,
         title = title, f_font = f_font, font_size = font_size,
         template = template)
-    # Save the result
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
-    # ---  DEVONLY - TODO --max-size (x,y)
-    scale_factor = 0.25
-    x = int(img.width * scale_factor)
-    y = int(img.height * scale_factor)
-    resized = img.resize((x,y),Image.ANTIALIAS)
-    img.save("resized-out-" + target)
-    print("resized-out-" + target)
-    # ---
+    # ---  if --max-size is given: check if currently bigger and downscale if necessary...
+    if max_size:
+        xs, ys = img.size
+        if (xs > max_size) or (ys > max_size):
+            log.info('scaling result down to --max_size %i' % max_size)
+            factor = 1
+            if xs >= ys:
+                factor = max_size / xs
+            else:
+                factor = max_size / ys
+            x_new = int(img.width * factor)
+            y_new = int(img.height * factor)
+            img = img.resize((x_new,y_new),Image.ANTIALIAS)
+    # yai, finally ... :)
     img.save(target)
     print(target)
