@@ -61,7 +61,7 @@ from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 # --- configure logging
 log = logging.getLogger(__name__)
-log.setLevel(logging.INFO)
+log.setLevel(logging.WARNING)
 handler = logging.StreamHandler() # console-handler
 formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 handler.setFormatter(formatter)
@@ -488,7 +488,10 @@ if __name__ == '__main__':
     # ---
     if template:
         size = None # needs to be calculated
-    setup_globals(size, configfile, template)
+    show_setup_info = False
+    if log.level <= logging.INFO:
+        show_setup_info = True
+    setup_globals(size = size, configfile = configfile, template = template, show = show_setup_info)
     size = IMAGE_SIZE
     if args['--max-size']:
         max_size = int(args['--max-size'])
