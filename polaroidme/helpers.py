@@ -7,7 +7,7 @@ from operator import itemgetter
 import os
 import json
 
-from polaroidme.polaroidme import get_exif
+from polaroidme import get_exif
 
 import exifread
 from PIL import Image

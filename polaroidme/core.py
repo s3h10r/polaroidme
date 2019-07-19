@@ -5,7 +5,7 @@ polaroidme - converts an image into vintage polaroid style
 
 Usage:
   polaroidme <source-image> [--output=<filename>]
-  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>]
+  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>] --filter-2ascii
   polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta]
   polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--font=<f>] [--size-inner=<n>] [--max-size=<w>]
   polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--alignment=<str>] [--title=<str>][--title-meta] [-f=<f>] [--template=<str>] [-c=<str>] [-m=<w>]
@@ -28,6 +28,7 @@ Options:
   --clockwise       Rotate the image clockwise before processing
   --crop            the images will be cropped to fit. see --alignment
   -f, --font=<f>    Specify (ttf-)font to use (full path!)
+  --filter-2ascii
   -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
   --title=<str>     Defines an optional caption to be displayed at the
                     bottom of the image. (default=None)
@@ -59,6 +60,8 @@ from docopt import docopt
 import exifread
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 
+import filters
+
 # --- configure logging
 log = logging.getLogger(__name__)
 log.setLevel(logging.INFO)
@@ -89,7 +92,7 @@ PACKAGE_NAME = "polaroidme"
 
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 
-__version__ = (0,9,32)
+__version__ = (0,9,33)
 
 
 def get_exif(source):
@@ -230,7 +233,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
-def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None, bg_color_inner=(255,255,255)):
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None, bg_color_inner=(255,255,255),filter_func=None):
     """
     Converts an image into polaroid-style. This is the main-function of the module
     and it is exposed. It can be imported and used by any Python-Script.
@@ -239,7 +242,11 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
         PIL image instance
     """
     caption = title
-    img_in = Image.open(source)
+    img_in = None
+    if isinstance(source,Image.Image):
+        img_in = source
+    else:
+        img_in = Image.open(source)
     img_in.load()
     img = rotate_image(img_in, options['rotate'])
     [w, h] = img.size
@@ -257,7 +264,9 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
         img = crop_image_to_square(img, align)
     else:
         img = scale_image_to_square(img, bg_color=bg_color_inner)
-    img = scale_image(img, size)
+    img = scale_square_image(img, size)
+    if filter_func:
+        img = filter_func(img)
     if template:
         log.warning("--template is experimental!")
         img = _paste_into_template(image=img, template=template)
@@ -371,9 +380,9 @@ def scale_image_to_square(image, bg_color = (255,255,255)):
     background.load()
     return background
 
-def scale_image(image, size):
+def scale_square_image(image, size):
     """
-    scales the image to size (up-/downsampling)
+    scales the (square) image to size (up-/downsampling)
 
     returns scaled image
     """
@@ -385,6 +394,18 @@ def scale_image(image, size):
     else:
         image = image.resize((size, size), Image.BICUBIC)
     log.debug("scaled to size: %i %i" % (image.size[0], image.size[1]))
+    return image
+
+def scale_image(image, new_width=600):
+    """
+    scales the image to new_width while maintaining aspect ratio
+    """
+    new_w = new_width
+    (old_w, old_h) = image.size
+    aspect_ratio = float(old_h)/float(old_w)
+    new_h = int(aspect_ratio * new_w)
+    new_dim = (new_w, new_h)
+    image = image.resize(new_dim)
     return image
 
 def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = COLOR_BORDER):
@@ -485,6 +506,9 @@ if __name__ == '__main__':
         template = args['--template']
     if args['--config']:
         configfile = args['--config']
+    filter_2ascii = False
+    if args['--filter-2ascii']:
+        filter_2ascii = True
     # ---
     if template:
         size = None # needs to be calculated
@@ -514,6 +538,11 @@ if __name__ == '__main__':
     # Prepare our resources
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
+    if filter_2ascii:
+        img = Image.open(source)
+        img_as_ascii = filters.convert_image_to_ascii(img)
+        img = filters.convert_ascii_to_image(img_as_ascii)
+        source = img
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
