@@ -2,11 +2,22 @@ polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
 polaroidme is a command-line-tool for placing an image into a
-Polaroid-like frame and optionally put a title / description on the bottom.
+Polaroid-like frame and optionally put a title / description or meta infos
+out of EXIF-data on the bottom.
 The default font mimics scribbled handwriting but any (ttf-)font
 which suits your taste is supported. The tool offers basic features
 like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
+
+<img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
+
+
+Because the author likes generative art polaroidme is also some playgound. The
+things in the (frequently come and going) "filter/edit/generator"-sections are
+definitely more often broken than working. :-D Anyways: this little project
+was intitiated by the need for a script which creates some high-resolution contact sheets
+of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
+That's all. Maybe it can be usefull for you too.
 
 polaroidme is simple to use:
 
@@ -14,11 +25,13 @@ polaroidme is simple to use:
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
+To get an appealing rugged analogue style you can [use high-resolution scans of
+polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
+
 Example output:
 
 <img src="/examples/test-04.png" width="48%"></img>
 <img src="/examples/test-04B.png" width="48%"></img>
-
 
 If you need more control over the output polaroidme offers you plenty of options.
 The `--nocrop` Flag is an example of an option which is handy if your input images
@@ -51,7 +64,7 @@ To install polaroidme, run this command in your terminal:
     $ pip install polaroidme
 ```
 
-This is the preferred method to install polaroidme, as it will always install
+This is the preferred method to install the software, as it will always install
 the most recent stable release.
 
 If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
@@ -63,10 +76,10 @@ more example output
 <img src="/examples/test-04D.png" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
+<img src="/examples/test-01D.png" width="48%" title="--edit pixelsort (random algo)"></img>
+<!--
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
-<img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
-<img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
-
+-->
 <!-- TODO: add contactsheet example -->
 
 usage
@@ -87,7 +100,8 @@ foo@bar:~$ polaroidme ./example/example.png --size 400 --nocrop --title "--nocro
 
 will create the file `./example/example.polaroid.png`.
 
-To display the creation date of the Photo (EXIF-data) as title `-title-meta` is the right switch:
+To display the creation date of the Photo (EXIF-data) as title the
+option `-title-meta` can be used:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png -o ./example/example.polaroid.png --size 400 --title-meta
@@ -101,7 +115,8 @@ foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
 Use `polaroidme --help` to get a description of all available options:
-```
+
+```console
 foo@bar:~$ polaroidme --help
 
 polaroidme - converts an image into vintage polaroid style
@@ -188,25 +203,45 @@ foo@bar:~$
 ```
 -->
 
+Credits
+-------
+Öh. Mainly stackoverflow of course... :D For the ASCII-art function
+polaroidme uses codesnippets from the following Open Source projects:
+
+ - [asciify](https://github.com/s3h10r/asciify)
+ - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
+   Copyright (c) 2018 Jianzhu Guo, MIT License
+
+The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f)  
+is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
+supporting the remix culture - and also for making IT fun again! Live long and prosper! :)
+All the crap in the code is by me of course. Please feel free to refacture, fix, tinker & break.
+
 TODO
 ----
-
- - simple plugins: ascciart, pixelsort, texture-blending, ...
+ - minimalistic & fun to use plugins: ascciart, pixelsort, texture-blending, ...
  - support more shapes than square (means: much more template usecases :))
- - contactsheet filtering options based on EXIF-data
- - custom colors (user-defined, average, ...)
- - automated testing
+ - custom colors (arg, means, ...)
+ - finish contactsheet (feature)
  - template auto-preps
- - option to put a description-text below title / watermark
- - rewrite corkboard (lab-branch) and add to master
-
+ - automated testing
+ - option to put a description-text / link / Copyleft below title / watermark
+ - rewrite corkboard (lab-branch) and add it to master
+ - basic stats & picture analysis
 
  changelog
  ---------
 
+ **0.9.33** (work in progress)
+ - restructuring the messy parts a bit ()[packages](https://docs.python.org/3.6/tutorial/modules.html#packages))
+ - minimalistic edit/filter-funcs for fun (asciiart, pixelsorting, ...)
+ - contactsheet supports filtering by time-window
+ - improved template support
+ - bugfixes & new bugs :)
+
  **0.9.32**
- - option to use [Hi-Res scenned Blank Polaroid Frames](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/)
-   as template (NEW args `--template` & `--config`). visual output quality
+ - option to use high-res scanned blank Polaroid frames as template
+   (NEW args `--template` & `--config`). visual output quality
    gains expression by this. :)
  - inits tools for template-preparation (trim_, setup_)
  - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
@@ -247,3 +282,7 @@ TODO
 
  - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
  - converts to python3
+
+
+ <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
+ <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
