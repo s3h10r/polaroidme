@@ -8,7 +8,7 @@ FQFN_FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 pom ${DIR_IN}DSCF4700.jpg -o test-00.png --title "test-00. --title" --max-size 400 || exit 1
 pom ${DIR_IN}octocat.png -o test-01.png --title "test-01B --edit 2ascii" --edit 2ascii || exit 1
 pom ${DIR_IN}reny_DSCF3307.jpg -o test-01C.png --title "--edit 2ascii" --edit 2ascii --title-meta --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF}|| exit 1
-pom ${DIR_IN}reny_DSCF3307.jpg -o test-01D.png --title "--edit pixelsort" --edit pixelsort --title-meta --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF}|| exit 1
+pom ${DIR_IN}reny_DSCF3307.jpg -o test-01D.png --title "--edit pixelsort" -m 600 --edit pixelsort --title-meta --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF}|| exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-04.png --title "0.9.3 issue#4. EXIF." --title-meta --max-size 400 -f ${FQFN_FONT} --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF} || exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-03.png --template ./templates/trimmed-fzm-Polaroid.Frame-03.jpg --title "0.9.3 issue#3. high-res tpl support" --max-size 4000 || exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-04A.png --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF} --title "0.9.3 issue#3 & --max-size" --max-size 400 || exit 1
