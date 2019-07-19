@@ -1,13 +1,13 @@
 #!/bin/bash -vx
 DIR_IN='./input/'
-#FQFN_CONF='/home/s3h10r/development/pom/pom/pom.conf'
 FQFN_CONF=$(realpath ./polaroidme/polaroidme.conf)
-#FONT=$(realpath ./pom/fonts/MiasScribblings~.ttf)
+#FONT=$(realpath ./polaroidme/fonts/MiasScribblings~.ttf)
 FQFN_FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 
 
 pom ${DIR_IN}DSCF4700.jpg -o test-00.png --title "test-00. --title" --max-size 400 || exit 1
-pom ${DIR_IN}DSCF4700.jpg -o test-01.png --title "test-01 --filter-2ascii" --filter-2ascii || exit 1
+pom ${DIR_IN}octocat.png -o test-01B.png --title "test-01B --filter-2ascii" --filter-2ascii || exit 1
+pom ${DIR_IN}reny_DSCF3307.jpg -o test-01C.png --title "--filter-2ascii" --filter-2ascii --title-meta --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF}|| exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-04.png --title "0.9.3 issue#4. EXIF." --title-meta --max-size 400 -f ${FQFN_FONT} --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF} || exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-03.png --template ./templates/trimmed-fzm-Polaroid.Frame-03.jpg --title "0.9.3 issue#3. high-res tpl support" --max-size 4000 || exit 1
 pom ${DIR_IN}DSCF4700.jpg -o test-04A.png --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF} --title "0.9.3 issue#3 & --max-size" --max-size 400 || exit 1
@@ -18,8 +18,12 @@ pom ${DIR_IN}DSCF6105.jpg -o test-04D2.png --crop --align left --template ./temp
 
 feh test-00.png
 file test-00.png
-feh test-01.png
-file test-01.png
+feh test-01B.png
+file test-01B.png
+feh test-01C.png
+file test-01C.png
+feh test-04.png
+feh test-04.png
 feh test-04.png
 feh test-04.png
 file test-04.png
