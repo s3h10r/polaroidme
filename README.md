@@ -19,7 +19,7 @@ foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/
 Example output:
 
 <img src="/examples/test-04.png" width="48%"></img>
-<img src="/examples/test-04B.jpg" width="48%"></img>
+<img src="/examples/test-04B.png" width="48%"></img>
 
 
 If you need more control over the output polaroidme offers you plenty of options.
@@ -65,7 +65,10 @@ more example output
 <img src="/examples/test-04D.png" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
+<img src="/examples/test-01D.png" width="48%" title="--edit pixelsort (random algo)"></img>
+<!--
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
+-->
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
 
