@@ -11,12 +11,15 @@ which suits your taste is supported. The tool offers basic features
 like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
 
+<img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
+
+
 Because the author likes generative art polaroidme is also some playgound. The
 things in the (frequently come and going) "filter/edit/generator"-sections are
 definitely more often broken than working. :-D Anyways: this little project
 was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
-That's all. MAybe it is usefull for you too.
+That's all. Maybe it can be usefull for you too.
 
 polaroidme is simple to use:
 
@@ -24,18 +27,17 @@ polaroidme is simple to use:
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
+To get an appealing rugged analogue style you can [use high-resolution scans of
+polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
+
 Example output:
 
 <img src="/examples/test-04.png" width="48%"></img>
 <img src="/examples/test-04B.png" width="48%"></img>
 
-
 If you need more control over the output polaroidme offers you plenty of options.
 The `--nocrop` Flag is an example of an option which is handy if your input images
 are not in square-format and you don't want to get parts cropped (default).   
-
-<img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
-
 
 Though polaroidme is intended and commonly used as a command-line-tool it is also
 a regular python-module (since version 0.9.2). Using it in other software is
@@ -80,9 +82,6 @@ more example output
 <!--
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 -->
-<img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
-<img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
-
 <!-- TODO: add contactsheet example -->
 
 usage
@@ -207,7 +206,7 @@ foo@bar:~$
 
 Credits
 -------
-Erm. Mainly stackoverflow of course... :D For the ASCII-art function
+Öh. Mainly stackoverflow of course... :D For the ASCII-art function
 polaroidme uses codesnippets from the following Open Source projects:
 
  - [asciify](https://github.com/s3h10r/asciify)
@@ -221,19 +220,25 @@ All the crap in the code is by me of course. Please feel free to refacture, fix,
 
 TODO
 ----
-
- - simple plugins: ascciart, pixelsort, texture-blending, ...
+ - minimalistic & fun to use plugins: ascciart, pixelsort, texture-blending, ...
  - support more shapes than square (means: much more template usecases :))
  - custom colors (arg, means, ...)
- - automated testing
  - finish contactsheet (feature)
  - template auto-preps
- - option to put a description-text below title / watermark
- - rewrite corkboard (lab-branch) and add to master
-
+ - automated testing
+ - option to put a description-text / link / Copyleft below title / watermark
+ - rewrite corkboard (lab-branch) and add it to master
+ - basic stats & picture analysis
 
  changelog
  ---------
+
+ **0.9.33** (work in progress)
+ - restructuring the messy parts a bit ()[packages](https://docs.python.org/3.6/tutorial/modules.html#packages))
+ - minimalistic edit/filter-funcs for fun (asciiart, pixelsorting, ...)
+ - contactsheet supports filtering by time-window
+ - improved template support
+ - bugfixes & new bugs :)
 
  **0.9.32**
  - option to use high-res scanned blank Polaroid frames as template
@@ -278,3 +283,7 @@ TODO
 
  - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
  - converts to python3
+
+
+ <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
+ <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
