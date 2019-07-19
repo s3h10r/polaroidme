@@ -64,10 +64,8 @@ more example output
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
-<!--
 <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
 <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
--->
 
 <!-- TODO: add contactsheet example -->
 
@@ -195,9 +193,11 @@ TODO
 ----
 
  - simple plugins: ascciart, pixelsort, texture-blending, ...
- - custom colors
+ - support more shapes than square (means: much more template usecases :))
+ - custom colors (arg, means, ...)
  - automated testing
  - finish contactsheet (feature)
+ - template auto-preps
  - option to put a description-text below title / watermark
  - rewrite corkboard (lab-branch) and add to master
 
@@ -206,11 +206,13 @@ TODO
  ---------
 
  **0.9.32**
- - option to use high-res scanned blank Polaroid frames as template.
-   (NEW args `--template` & `--config`)
+ - option to use high-res scanned blank Polaroid frames as template
+   (NEW args `--template` & `--config`). visual output quality
+   gains expression by this. :)
  - inits tools for template-preparation (trim_, setup_)
  - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
-   (NEW arg `--title-meta`)
+   (NEW arg `--title-meta`).
+ - new args `--size-inner` & `--max-size``
  - several minor bugfixes   
  - contactsheet: sorting options based on EXIF-data
 
