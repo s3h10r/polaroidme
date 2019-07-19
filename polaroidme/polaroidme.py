@@ -4,53 +4,60 @@
 polaroidme - converts an image into vintage polaroid style
 
 Usage:
-  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--size-thumb=<n>] [--max-size=<w>] [--config=<str>]
-  polaroidme <source-image> [--output=<filename>] [--title=<str>] [--size-thumb=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>]
-  polaroidme <source-image> [--title=<str>] [--font=<f>] [--output=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-  polaroidme <source-image> [--size-thumb=<n>] [--alignment=<str>] [--title=<str>] [--output=<filename>] [--font=<f>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-  polaroidme <source-image> [--nocrop|--crop] [--title=<str>] [--font=<str>] [--size-thumb=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--font=<f>] [--size-thumb=<n>] [--output=<filename>] [--alignment=<str>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-
+  polaroidme <source-image> [--output=<filename>]
+  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>]
+  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta]
+  polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--font=<f>] [--size-inner=<n>] [--max-size=<w>]
+  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--alignment=<str>] [--title=<str>][--title-meta] [-f=<f>] [--template=<str>] [-c=<str>] [-m=<w>]
+  polaroidme <source-image> [--nocrop|--crop] [--alignment=<str>] [--title=<str>] [--title-meta] [-f=<str>] [-s=<n>] [-o=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--title-meta] [-f=<f>] [-s=<n>] [-o=<fn>] [--alignment=<str>] [--template=<str>] [-config=<str>] [-m=<w>] [--title-meta]
 
 Where:
   source-image    Name of the image file to convert.
-  size            Size of the picture-part of the polaroid in pixels (default=800)
-  alignment       Used for cropping - specifies the portion of the image
-                  to include in the final output.
-                  One of 'top', 'left', 'bottom', 'right' or 'center'.
-                  'top' and 'left' are synonomous as are 'bottom' and
-                  'right'. (default="center").
-                  Not of any use if --nocrop option is set.
-  title           Defines an optional caption to be displayed at the
-                  bottom of the image. (default=None)
   font            Specify (ttf-)font to use (full path!)
 
 Options:
-  --nocrop         Rescale the image to fit fullframe in the final output
-                   (default="--crop"). btw. alignment is ignored if option is set.
-  -o, --output=<s> Defines the name of the outputfile. If omitted a filename
-                   based on the original will be used - example:
-                   'test.polaroid.png' will be used as filename if input-file is 'test.png'
-  -f, --font=<f>   Specify (ttf-)font to use (full path!)
-  --size-thumb=<s>   Specifiy width of thumbnail in pixels (default=200)
-  --max-size=<w>   Sets maximum width of the created contactsheet
-  --template=<t>   EXPERIMENTAL-FEATURE: Specify a template to use
-  --clockwise      Rotate the image clockwise before processing
-  --anticlockwise  Rotate the image anti-clockwise before processing
+  --alignment=<str> Used for cropping - specifies the portion of the image
+                    to include in the final output.
+                    One of 'top', 'left', 'bottom', 'right' or 'center'.
+                    'top' and 'left' are synonomous as are 'bottom' and
+                    'right'. (default="center").
+                    Not of any use if --nocrop option is set.
+  --anticlockwise   Rotate the image anti-clockwise before processing
+  -c,--config=<py>  a config is only necessary if --template is used (see docs)
+  --clockwise       Rotate the image clockwise before processing
+  --crop            the images will be cropped to fit. see --alignment
+  -f, --font=<f>    Specify (ttf-)font to use (full path!)
+  -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
+  --title=<str>     Defines an optional caption to be displayed at the
+                    bottom of the image. (default=None)
+  --title-meta      Adds EXIF-data (date of capturing) to the title.
+  -m,--max-size=<w> Sets maximum size (width) of the created polaroid.
+                    (size-inner + frame <= max-size)
+  --nocrop          Rescale the image to fit fullframe in the final output
+                    (default="--crop"). btw. alignment is ignored if option is set.
+  -o, --output=<s>  Defines the name of the outputfile. If omitted a filename
+                    based on the original will be used - example:
+                    'test.polaroid.png' will be used as filename if input-file is 'test.png'
+  --template=<t>    Specify a template to use. A template can be a high-res
+                    scan of a real Polaroid or something of its shape.
+                    By using a template the visual output quality gains on
+                    expression & authenticity.
 
-  -h, --help       Print this.
-      --version    Print version.
+  -h, --help        Print this.
+      --version     Print version.
 
 The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
+import datetime as dt
 import json
 import os
 import site
 import sys
 import logging
 from docopt import docopt
+import exifread
 from PIL import Image, ImageDraw, ImageFont, ExifTags
-
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -73,14 +80,35 @@ COLOR_FRAME   = (237, 243, 214)
 COLOR_BORDER  = (0, 0, 0)
 COLOR_TEXT_TITLE = (58, 68, 163)
 COLOR_TEXT_DESCR = COLOR_TEXT_TITLE
+COLOR_BG_INNER = (0,0,0)                # usefull if --nocrop
 # Font for the caption text
 RESOURCE_FONT      = "fonts/default.ttf"
 RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.9))
+RESOURCE_CONFIG_FILE="polaroidme.conf"
 PACKAGE_NAME = "polaroidme"
 
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 
-__version__ = (0,9,3)
+__version__ = (0,9,32)
+
+
+def get_exif(source):
+    """
+    """
+    if isinstance(source, Image.Image):
+        if hasattr(source, filename):
+            source = source.filename
+        else:
+            raise Exception("Sorry, source is an Image-instance and i could not determine the filename. Please geve me a FQFN instead.")
+    elif not isinstance(source, str):
+        raise Exception("Ouch. Sorry, source must be a valid filename.")
+    with open(source, 'rb') as f:
+        exif_data = exifread.process_file(f, details=True)
+    for tag in exif_data:
+        log.debug("exif_data has key: %s" % (tag))
+        if tag in ('Image DateTime', 'EXIF DateTimeOriginal'):
+            log.debug("EXIF data of %s for key %s is %s" % (source, tag, exif_data[tag]))
+    return exif_data
 
 # --- argparsing helpers etc
 def get_resource_file(basefile):
@@ -117,6 +145,9 @@ def setup_globals(size, configfile=None, template = None, show = True):
     global TEMPLATE_BOXES
 
     if configfile:
+        if not (os.path.isfile(configfile)):
+            log.warning("configfile {} not found... please always give absolute paths to config-file to avoid confusions :D".format(configfile))
+            sys.exit(1)
         # --- load config file (if any)
         with open(configfile) as f:
             log.info("reading config...")
@@ -144,23 +175,35 @@ def setup_globals(size, configfile=None, template = None, show = True):
         for k in TEMPLATE_BOXES:
             TEMPLATE_BOXES[k] = [int(round(f)) for f in TEMPLATE_BOXES[k]]
         # ---
+
         box = TEMPLATE_BOXES[os.path.basename(template)]
         w = box[2] - box[0]
         h = box[3] - box[1]
         if w != h:
             log.warning("boxdefinition for template {} is not a square. w,h {},{}".format(k,w,h))
-        if w > h:
-            size = w
-        else:
-            size = h
+            log.warning("auto-fixing => making it square...")
+            if w > h: #AUTO_FIX
+                box[3] += (w - h)
+            else:
+                box[2] += (h - w)
+            TEMPLATE_BOXES[os.path.basename(template)] = [box[0], box[1], box[2], box[3]]
+            box = TEMPLATE_BOXES[os.path.basename(template)]
+            w = box[2] - box[0]
+            h = box[3] - box[1]
+            log.warning("boxdefinition for template {} auto-adjusted to: w,h {},{}".format(k,w,h))
+            assert(w == h)
+        size = w
+        assert((size == w) and (size== h))
         IMAGE_SIZE = size
         # overwrite the above calculated  _TOP,_BOTTOM, ... values
         # by the one our template "dictates"
-        tpl = Image.open(template)
+        try:
+            tpl = Image.open(template)
+        except:
+            tpl = Image.open(get_resource_file(template))
+
         tpl_x, tpl_y = tpl.size
         tpl.close()
-
-        #FIXMEP1 alignment of text is wrong...
         IMAGE_TOP = box[1]
         IMAGE_BOTTOM = tpl_y - (IMAGE_TOP + IMAGE_SIZE)
         IMAGE_LEFT = box[0]
@@ -187,7 +230,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
-def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None):
+def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None, bg_color_inner=(255,255,255)):
     """
     Converts an image into polaroid-style. This is the main-function of the module
     and it is exposed. It can be imported and used by any Python-Script.
@@ -213,7 +256,7 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
     if options['crop']:
         img = crop_image_to_square(img, align)
     else:
-        img = scale_image_to_square(img)
+        img = scale_image_to_square(img, bg_color=bg_color_inner)
     img = scale_image(img, size)
     if template:
         log.warning("--template is experimental!")
@@ -232,7 +275,11 @@ def _paste_into_template(image = None, template = './templates/fzm-Polaroid.Fram
     """
     if not box:
         box = TEMPLATE_BOXES[os.path.basename(template)]
-    img_tpl = Image.open(template)
+    try:
+        img_tpl = Image.open(template)
+    except:
+        img_tpl = Image.open(get_resource_file(template))
+
     w = int(box[2] - box[0])
     h = int(box[3] - box[1])
     log.debug("box-size the picture will be pasted into is (w,h) {} {}".format(w,h))
@@ -240,10 +287,10 @@ def _paste_into_template(image = None, template = './templates/fzm-Polaroid.Fram
     if region2copy.size[0] > w:
         # Downsample
         log.info("downsampling... (good)")
-        region2copy = region2copy.resize((w,h),Image.ANTIALIAS) # FIXMEP2 verzerrung
+        region2copy = region2copy.resize((w,h),Image.ANTIALIAS)
     else:
         log.info("upscaling... (not so good ;)")
-        region2copy = region2copy.resize((w,h), Image.BICUBIC) # FIXMEP2 verzerrung
+        region2copy = region2copy.resize((w,h), Image.BICUBIC)
     assert(region2copy.size == (w,h))
     #print(region2copy.size, (w,h))
     #print(region2copy.size, box)
@@ -307,9 +354,9 @@ def scale_image_to_square(image, bg_color = (255,255,255)):
     image_ratio = float(float(img_h)/float(img_w))
     add_border = 0
     if image_ratio < 1:
-        add_border = image.size[0] * (( 1 + image_ratio ) / 16)
+        add_border = image.size[0] * (( 1 + image_ratio ) / 64)
     else:
-        add_border = image.size[1] * ((image_ratio - 1) / 16)
+        add_border = image.size[1] * ((image_ratio - 1) / 64)
     add_border = int(add_border)
     background = None
     if image.size[0] > image.size[1]:
@@ -355,10 +402,13 @@ def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = 
 
 def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, font_size = RESOURCE_FONT_SIZE):
     """
-    adds the title to the image
+    adds a title (string) to the image
     description is unused at the moment
+
+    returns
+        PIL Image instance
     """
-    if title is None:
+    if (title is None) or (len(title)==0):
         return image
     size = font_size
     f_font = get_resource_file(f_font)
@@ -392,17 +442,19 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
 if __name__ == '__main__':
     # --- process args & options
     args = docopt(__doc__, version=__version__)
-    print(args)
     options = { 'rotate': None, 'crop' : True } # defaults
     source = None
-    size = IMAGE_SIZE # size of thumbnail! (not the contactsheet)
+    size = IMAGE_SIZE # inner size, only the picture without surrounding frame
     target = None
     align = "center"
-    title = None
+    title = ""
     f_font = None
     template = None
-    configfile = None
+    configfile = get_resource_file(RESOURCE_CONFIG_FILE)
     max_size = None # max size (width) of the contactsheet
+    add_exif_to_title = None
+
+    bg_color_inner = COLOR_BG_INNER
     # process options
     source = args['<source-image>']
     if source.lower() in('-', 'stdin'):
@@ -412,15 +464,17 @@ if __name__ == '__main__':
     elif args['--anticlock']:
         option['rotate'] = 'anticlockwise'
     if args['--crop']:
-        option['crop'] = True
+        options['crop'] = True
     elif args['--nocrop']:
-        option['crop'] = False
-    if args['--size-thumb']:
-        size = int(args['--size-thumb'])
+        options['crop'] = False
+    if args['--size-inner']:
+        size = int(args['--size-inner'])
     if args['--alignment']: # only used if --crop
         align = args['--alignment']
     if args['--title']:
         title = args['--title']
+    if args['--title-meta']:
+        add_exif_to_title = True
     if args['--font']:
         f_font = args['--font']
     else:
@@ -429,7 +483,6 @@ if __name__ == '__main__':
         target = args['--output']
     if args['--template']:
         template = args['--template']
-
     if args['--config']:
         configfile = args['--config']
     # ---
@@ -440,13 +493,24 @@ if __name__ == '__main__':
     if args['--max-size']:
         max_size = int(args['--max-size'])
     # heree we go...
+    if add_exif_to_title:
+        exif_data = get_exif(source)
+        if ('EXIF DateTimeOriginal') in exif_data:
+            v = exif_data['EXIF DateTimeOriginal']
+            timestamp = dt.datetime.strptime(str(v), '%Y:%m:%d %H:%M:%S')
+            meta = timestamp
+            if len(title) > 0:
+                title += " "
+            title += "%s" % (timestamp)
+        else:
+            log.warning("--title-meta set but exif_data about DateTime unavailable for the input-image. :-/ : {}; ;".format(fn))
     name, ext = os.path.splitext(source)
     if not os.path.isfile(source):
         show_error("Source file '%s' does not exist." % source)
     if not target:
         target = name + ".polaroid.png"
     if not align in ("left", "right", "top", "bottom", "center"):
-        show_error("Unknown alignment '%s'." % align)
+        show_error("Unknown alignment %s." % align)
     # Prepare our resources
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
@@ -454,7 +518,8 @@ if __name__ == '__main__':
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
         title = title, f_font = f_font, font_size = font_size,
-        template = template)
+        template = template,
+        bg_color_inner = bg_color_inner)
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     # ---  if --max-size is given: check if currently bigger and downscale if necessary...
     if max_size:
