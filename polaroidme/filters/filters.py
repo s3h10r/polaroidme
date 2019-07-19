@@ -13,7 +13,7 @@ import random
 import sys
 
 from polaroidme.helpers.helpers import get_exif
-from polaroidme.core.core import scale_image_to_square, scale_square_image, scale_image
+from polaroidme.helpers.gfx import scale_image_to_square, scale_image, scale_square_image
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
