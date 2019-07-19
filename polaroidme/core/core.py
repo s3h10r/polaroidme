@@ -1,54 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-polaroidme - converts an image into vintage polaroid style
-
-Usage:
-  polaroidme <source-image> [--output=<filename>]
-  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>] --filter-2ascii
-  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta]
-  polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--font=<f>] [--size-inner=<n>] [--max-size=<w>]
-  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--alignment=<str>] [--title=<str>][--title-meta] [-f=<f>] [--template=<str>] [-c=<str>] [-m=<w>]
-  polaroidme <source-image> [--nocrop|--crop] [--alignment=<str>] [--title=<str>] [--title-meta] [-f=<str>] [-s=<n>] [-o=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--title-meta] [-f=<f>] [-s=<n>] [-o=<fn>] [--alignment=<str>] [--template=<str>] [-config=<str>] [-m=<w>] [--title-meta]
-
-Where:
-  source-image    Name of the image file to convert.
-  font            Specify (ttf-)font to use (full path!)
-
-Options:
-  --alignment=<str> Used for cropping - specifies the portion of the image
-                    to include in the final output.
-                    One of 'top', 'left', 'bottom', 'right' or 'center'.
-                    'top' and 'left' are synonomous as are 'bottom' and
-                    'right'. (default="center").
-                    Not of any use if --nocrop option is set.
-  --anticlockwise   Rotate the image anti-clockwise before processing
-  -c,--config=<py>  a config is only necessary if --template is used (see docs)
-  --clockwise       Rotate the image clockwise before processing
-  --crop            the images will be cropped to fit. see --alignment
-  -f, --font=<f>    Specify (ttf-)font to use (full path!)
-  --filter-2ascii
-  -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
-  --title=<str>     Defines an optional caption to be displayed at the
-                    bottom of the image. (default=None)
-  --title-meta      Adds EXIF-data (date of capturing) to the title.
-  -m,--max-size=<w> Sets maximum size (width) of the created polaroid.
-                    (size-inner + frame <= max-size)
-  --nocrop          Rescale the image to fit fullframe in the final output
-                    (default="--crop"). btw. alignment is ignored if option is set.
-  -o, --output=<s>  Defines the name of the outputfile. If omitted a filename
-                    based on the original will be used - example:
-                    'test.polaroid.png' will be used as filename if input-file is 'test.png'
-  --template=<t>    Specify a template to use. A template can be a high-res
-                    scan of a real Polaroid or something of its shape.
-                    By using a template the visual output quality gains on
-                    expression & authenticity.
-
-  -h, --help        Print this.
-      --version     Print version.
-
-The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 """
 import datetime as dt
 import json
@@ -60,7 +12,9 @@ from docopt import docopt
 import exifread
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 
-import filters
+from polaroidme.filters.filters import convert_ascii_to_image, convert_image_to_ascii
+from polaroidme.helpers.helpers import get_exif, get_resource_file, show_error
+
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -88,53 +42,11 @@ COLOR_BG_INNER = (0,0,0)                # usefull if --nocrop
 RESOURCE_FONT      = "fonts/default.ttf"
 RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.9))
 RESOURCE_CONFIG_FILE="polaroidme.conf"
-PACKAGE_NAME = "polaroidme"
 
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 
 __version__ = (0,9,33)
 
-
-def get_exif(source):
-    """
-    """
-    if isinstance(source, Image.Image):
-        if hasattr(source, filename):
-            source = source.filename
-        else:
-            raise Exception("Sorry, source is an Image-instance and i could not determine the filename. Please geve me a FQFN instead.")
-    elif not isinstance(source, str):
-        raise Exception("Ouch. Sorry, source must be a valid filename.")
-    with open(source, 'rb') as f:
-        exif_data = exifread.process_file(f, details=True)
-    for tag in exif_data:
-        log.debug("exif_data has key: %s" % (tag))
-        if tag in ('Image DateTime', 'EXIF DateTimeOriginal'):
-            log.debug("EXIF data of %s for key %s is %s" % (source, tag, exif_data[tag]))
-    return exif_data
-
-# --- argparsing helpers etc
-def get_resource_file(basefile):
-    """
-    gets the fully qualified name of a resource file
-    """
-    fqn = os.path.join(os.path.dirname(os.path.realpath(__file__)), basefile)
-    if not os.path.isfile(fqn):
-        # when installed via pip the package_data (see MANIFEST.in, setup.py)
-        # should be located somewhere in site-packages path of the (virtual-)env
-        for dir in site.getsitepackages():
-            fqn = dir + "/" + PACKAGE_NAME + "/" + basefile
-            if os.path.isfile(fqn):
-                return fqn
-                break
-    return fqn
-
-def show_error(msg):
-    """
-    Show an error message and exit
-    """
-    log.critical("Error: %s" % msg)
-    sys.exit(1)
 # ---
 
 def setup_globals(size, configfile=None, template = None, show = True):
@@ -460,9 +372,8 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
     return image
 
 
-if __name__ == '__main__':
-    # --- process args & options
-    args = docopt(__doc__, version=__version__)
+#if __name__ == '__main__':
+def main(args):
     options = { 'rotate': None, 'crop' : True } # defaults
     source = None
     size = IMAGE_SIZE # inner size, only the picture without surrounding frame

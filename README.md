@@ -1,6 +1,8 @@
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
+**0.9.94 restructures the package accourding to the py3 [packaging](https://docs.python.org/3.6/tutorial/modules.html#packages)**
+
 polaroidme is a command-line-tool for placing an image into a
 Polaroid-like frame and optionally put a title / description on the bottom.
 The default font mimics scribbled handwriting but any (ttf-)font
@@ -188,6 +190,17 @@ Successfully installed polaroidme-0.8.6
 foo@bar:~$
 ```
 -->
+
+Credits
+-------
+
+For the ASCII-art function polaroidme uses codesnippets from the following
+Open Source projects:
+
+ - [asciify](https://github.com/s3h10r/asciify)
+ - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
+   Copyright (c) 2018 Jianzhu Guo, MIT License
+
 
 TODO
 ----

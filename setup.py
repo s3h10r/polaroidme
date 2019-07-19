@@ -29,8 +29,8 @@ _`examples`: https://github.com/s3h10r/polaroidme/blob/master/README.md
 
 setuptools.setup(
      name='polaroidme',
-     version='0.9.32',
-     scripts=['polaroidme/polaroidme'] ,
+     version='0.9.33',
+     scripts=['pom'] ,
      author="Sven Hessenmüller",
      author_email="sven.hessenmueller@gmail.com",
      description="converts an image into vintage polaroid style",

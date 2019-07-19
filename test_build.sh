@@ -20,9 +20,9 @@ cp ./examples/${IMAGE_FN} ./tmp/tests/
 VERSION=$(polaroidme --version)
 echo $VERSION
 
-polaroidme $IMAGE_FQFN --size 400 --alignment center --title "testbuild ${VERSION} script" --font $FONT
+pom $IMAGE_FQFN --size 400 --alignment center --title "testbuild ${VERSION} script" --font $FONT
 feh ./tmp/tests/${IMAGE_FN%.jpg}.polaroid.png # ${VAR%pattern} - removes file extension
-polaroidme $IMAGE_FQFN --size 400 --alignment center --title "testbuild ${VERSION} script" || exit 1
+pom $IMAGE_FQFN --size 400 --alignment center --title "testbuild ${VERSION} script" || exit 1
 if [ $? -eq 0 ]
 then
   feh ./tmp/tests/${IMAGE_FN%.jpg}.polaroid.png # ${VAR%pattern} - removes file extension
