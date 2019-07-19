@@ -7,6 +7,8 @@ from operator import itemgetter
 import os
 import json
 
+from polaroidme.polaroidme import get_exif
+
 import exifread
 from PIL import Image
 
@@ -18,24 +20,6 @@ formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(messag
 handler.setFormatter(formatter)
 log.addHandler(handler)
 # ---
-
-def get_exif(source):
-    """
-    """
-    if isinstance(source, Image.Image):
-        if hasattr(source, filename):
-            source = source.filename
-        else:
-            raise Exception("Sorry, source is an Image-instance and i could not determine the filename. Please geve me a FQFN instead.")
-    elif not isinstance(source, str):
-        raise Exception("Ouch. Sorry, source must be a valid filename.")
-    with open(source, 'rb') as f:
-        exif_data = exifread.process_file(f, details=True)
-    for tag in exif_data:
-        log.debug("exif_data has key: %s" % (tag))
-        if tag in ('Image DateTime', 'EXIF DateTimeOriginal'):
-            log.debug("EXIF data of %s for key %s is %s" % (source, tag, exif_data[tag]))
-    return exif_data
 
 def get_images_in_dir(directory=None, suffix=('jpg','jpeg','png','gif', 'bmp', 'tif','tiff'),traversal=True):
     res = []
