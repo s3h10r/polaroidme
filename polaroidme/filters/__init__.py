@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 """
 TODO
-image2ascii, ascii2console, ascii2image (TODO: colorize-option! :D)
+pixelsort,
+image2ascii, ascii2console, ascii2image (TODO: colorize-option)
 hexdumps, ...
 """
 import glob
@@ -12,8 +13,7 @@ import os
 import random
 import sys
 
-from ..helpers import get_exif
-from ..helpers.gfx import scale_image_to_square, scale_image, scale_square_image
+from ..helpers.gfx import get_exif, scale_image_to_square, scale_image, scale_square_image
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
@@ -92,7 +92,7 @@ def convert_image_to_ascii(image):
 PIXEL_ON = 0  # PIL color to use for "on"
 PIXEL_OFF = 255  # PIL color to use for "off"
 large_font = 12  # get better resolution with larger size
-def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf'):
+def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf', color=(0,0,225)):
     """
     Copyright (c) 2018 Jianzhu Guo (MIT License)
     original source of this [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
@@ -103,7 +103,8 @@ def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf'):
     ascii_str - string of ascii format
     font_path - path to a font file (for example impact.ttf)
     """
-    grayscale = 'L'
+    mode = 'RGBA'
+    #mode = grayscale = 'L'
     ascii_str = ascii_str.replace('\r\n', '\n')  # for windows
     lines = ascii_str.rstrip().split('\n')
 
@@ -124,7 +125,10 @@ def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf'):
     max_width = pt2px(font.getsize(max_width_line)[0])
     height = max_height * len(lines)  # perfect or a little oversized
     width = int(round(max_width + 40))  # a little oversized
-    image = Image.new(grayscale, (width, height), color=PIXEL_OFF)
+    if mode != 'L':
+        image = Image.new(mode, (width, height), color=(255,255,255))
+    else:
+        image = Image.new(mode, (width, height), color=PIXEL_OFF)
     draw = ImageDraw.Draw(image)
 
     # draw each line of text
@@ -132,13 +136,18 @@ def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf'):
     horizontal_position = 5
     line_spacing = int(round(max_height * 0.8))  # reduced spacing seems better
     for line in lines:
+        if mode != 'L':
+            PIXEL_ON = color
         draw.text((horizontal_position, vertical_position),
                   line, fill=PIXEL_ON, font=font)
         vertical_position += line_spacing
 
     # return image
     # crop the text
-    c_box = ImageOps.invert(image).getbbox()
+    if mode == 'L':
+        c_box = ImageOps.invert(image).getbbox()
+    else:
+        c_box = image.getbbox()
     image = image.crop(c_box)
     return image
 

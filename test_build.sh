@@ -29,6 +29,7 @@ then
   cp ./tmp/tests/${IMAGE_FN%.jpg}.polaroid.png /tmp/
 fi
 
+./test_contactsheet.sh
 ./test_polaroidme.sh
 
 rm -Rfi ./tmp/

@@ -5,6 +5,7 @@
 import datetime as dt
 import json
 import os
+import random
 import site
 import sys
 import logging
@@ -13,9 +14,10 @@ import exifread
 from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 from polaroidme.filters import convert_ascii_to_image, convert_image_to_ascii
-from polaroidme.helpers import get_exif, get_resource_file, show_error
-from polaroidme.helpers.gfx import crop_image_to_square
-from polaroidme.helpers.gfx import scale_image_to_square, scale_image, scale_square_image
+from polaroidme.filters.pixelsort import do_pixelsort
+from polaroidme.helpers import get_resource_file, show_error
+from polaroidme.helpers.gfx import get_exif
+from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
 
 
 
@@ -49,6 +51,9 @@ RESOURCE_CONFIG_FILE="polaroidme.conf"
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 
 __version__ = (0,9,33)
+
+def get_version():
+    return(__version__)
 
 # ---
 
@@ -329,9 +334,9 @@ def main(args):
         template = args['--template']
     if args['--config']:
         configfile = args['--config']
-    filter_2ascii = False
-    if args['--filter-2ascii']:
-        filter_2ascii = True
+    edit_filter = None
+    if args['--edit']:
+        edit_filter = args['--edit']
     # ---
     if template:
         size = None # needs to be calculated
@@ -361,11 +366,21 @@ def main(args):
     # Prepare our resources
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
-    if filter_2ascii:
-        img = Image.open(source)
-        img_as_ascii = convert_image_to_ascii(img)
-        img = convert_ascii_to_image(img_as_ascii)
-        source = img
+    if edit_filter:
+        log.warning("%s is experimental" % edit_filter)
+        if edit_filter in ('2ascii', 'ascii'):
+            img = Image.open(source)
+            img_as_ascii = convert_image_to_ascii(img)
+            img = convert_ascii_to_image(img_as_ascii)
+            source = img
+        elif edit_filter in ('pixelsort'):
+            algos = [1,10,20]
+            idx = random.randint(0,2)
+            algo = algos[idx]
+            log.info("pixelsort algo %i" % algo)
+            img = Image.open(source)
+            img = do_pixelsort(img, algo=algo)
+            source = img
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,

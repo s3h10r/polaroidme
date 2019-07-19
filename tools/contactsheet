@@ -3,9 +3,10 @@
 contactsheet - create a contact sheet for all images in the specified directory
 
 Usage:
-  contactsheet <source> <image_out> [--no-meta] [--polaroid]
-  contactsheet <source> <image_out> [--sort-by=<str>] [--polaroid] [--nometa] [--reverse]
-  contactsheet <source> <image_out> [--ratio=<{square,classic,digital,free}>] [--font=<font>] [--size-thumb=<px>] [--sort-by <str>] [--reverse] [--polaroid] [--nometa]
+  contactsheet <source> [--output=<image_out>] [--sort-by=<str>] [--polaroid] [--nometa] [--ratio=<{square,classic,digital,free}>] [--reverse]  [--size-thumb=<px>]
+  contactsheet <source> [--output=<image_out>]  [--no-meta] [--polaroid]
+  contactsheet <source> [-o=<image_out>] [--sort-by=<str>] [--polaroid] [--nometa] [--reverse]
+  contactsheet <source> [-o=<image_out>] [--ratio=<{square,classic,digital,free}>] [--font=<font>] [--size-thumb=<px>] [--sort-by <str>] [--reverse] [--polaroid] [--nometa]
 
 
 Example:
@@ -19,6 +20,7 @@ Where:
 Options:
   -f, --font=<f>        Specify (ttf-)font to use (full path!)
   --nometa              Show the Thumbnail only - no filename, no datetime, no anything except the picture.
+  -o,--outputput=<f>    Defines Filename and -format of the output (for example: csheet.png)
   -r, --ratio=<r>       The aspect ratio of the contact sheet. One of
                         'square' (1:1), 'classic' (2:3) or 'digital' (3:4).
                         The value 'free' means "auto-optimize" (experimental).
@@ -77,8 +79,8 @@ TODOs
 import sys
 import logging
 import os
-from polaroidme import make_polaroid
-from polaroidme import get_images_in_dir, get_exif, sort_images_by_time
+from polaroidme.core import make_polaroid
+from polaroidme.helpers.gfx import get_exif, get_images_in_dir, sort_images_by_time
 from docopt import docopt
 from PIL import Image, ImageDraw, ImageFont
 
@@ -155,7 +157,7 @@ def make_contact_sheet( fnames = None, ncols = 4,nrows = 4,
                         title = add_text[count]
                     else:
                         log.warning("add_text is set but no text (usually meta_infos) provided as list.")
-                img = make_polaroid(fnames[count], 800, proid_options, "center", title=title, f_font = f_font)
+                img = make_polaroid(fnames[count], 800, proid_options, "center", title=title, f_font = f_font, font_size = 40)
             else:
                 if add_text:
                     logger.warning("TODO: text/metainfo is only added if --polaroid is used at the moment.")
@@ -239,7 +241,7 @@ if __name__ == '__main__':
     source = args['<source>']
     if source.lower() in('-', 'stdin'):
         raise Exception("hey, great idea! :) reading from STDIN is on the top of the TODO-list.")
-    f_out = args['<image_out>']
+    f_out = args['--output']
     ar_name = args['--ratio']
     if not ar_name:
         ar_name = 'digital'
