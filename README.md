@@ -17,7 +17,7 @@ foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/
 Example output:
 
 <img src="/examples/test-04.png" width="48%"></img>
-<img src="/examples/test-04B.jpg" width="48%"></img>
+<img src="/examples/test-04B.png" width="48%"></img>
 
 
 If you need more control over the output polaroidme offers you plenty of options.
@@ -87,8 +87,7 @@ foo@bar:~$ polaroidme ./example/example.png --size 400 --nocrop --title "--nocro
 
 will create the file `./example/example.polaroid.png`.
 
-To display the creation date of the Photo (EXIF-data) as title the
-option `-title-meta` can be used:
+To display the creation date of the Photo (EXIF-data) as title `-title-meta` is the right switch:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png -o ./example/example.polaroid.png --size 400 --title-meta
@@ -194,9 +193,9 @@ TODO
 
  - simple plugins: ascciart, pixelsort, texture-blending, ...
  - support more shapes than square (means: much more template usecases :))
- - custom colors (arg, means, ...)
+ - contactsheet filtering options based on EXIF-data
+ - custom colors (user-defined, average, ...)
  - automated testing
- - finish contactsheet (feature)
  - template auto-preps
  - option to put a description-text below title / watermark
  - rewrite corkboard (lab-branch) and add to master
@@ -206,8 +205,8 @@ TODO
  ---------
 
  **0.9.32**
- - option to use high-res scanned blank Polaroid frames as template
-   (NEW args `--template` & `--config`). visual output quality
+ - option to use [Hi-Res scenned Blank Polaroid Frames](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/)
+   as template (NEW args `--template` & `--config`). visual output quality
    gains expression by this. :)
  - inits tools for template-preparation (trim_, setup_)
  - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
