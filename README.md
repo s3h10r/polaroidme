@@ -4,11 +4,19 @@ polaroidme - converts an image into vintage polaroid style
 **0.9.94 restructures the package accourding to the py3 [packaging](https://docs.python.org/3.6/tutorial/modules.html#packages)**
 
 polaroidme is a command-line-tool for placing an image into a
-Polaroid-like frame and optionally put a title / description on the bottom.
+Polaroid-like frame and optionally put a title / description or meta infos
+out of EXIF-data on the bottom.
 The default font mimics scribbled handwriting but any (ttf-)font
 which suits your taste is supported. The tool offers basic features
 like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
+
+Because the author likes generative art polaroidme is also some playgound. The
+things in the (frequently come and going) "filter/edit/generator"-sections are
+definitely more often broken than working. :-D Anyways: this little project
+was intitiated by the need for a script which creates some high-resolution contact sheets
+of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
+That's all. MAybe it is usefull for you too.
 
 polaroidme is simple to use:
 
@@ -25,6 +33,9 @@ Example output:
 If you need more control over the output polaroidme offers you plenty of options.
 The `--nocrop` Flag is an example of an option which is handy if your input images
 are not in square-format and you don't want to get parts cropped (default).   
+
+<img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
+
 
 Though polaroidme is intended and commonly used as a command-line-tool it is also
 a regular python-module (since version 0.9.2). Using it in other software is
@@ -53,7 +64,7 @@ To install polaroidme, run this command in your terminal:
     $ pip install polaroidme
 ```
 
-This is the preferred method to install polaroidme, as it will always install
+This is the preferred method to install the software, as it will always install
 the most recent stable release.
 
 If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
@@ -196,14 +207,17 @@ foo@bar:~$
 
 Credits
 -------
-
-For the ASCII-art function polaroidme uses codesnippets from the following
-Open Source projects:
+Erm. Mainly stackoverflow of course... :D For the ASCII-art function
+polaroidme uses codesnippets from the following Open Source projects:
 
  - [asciify](https://github.com/s3h10r/asciify)
  - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
    Copyright (c) 2018 Jianzhu Guo, MIT License
 
+The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f)  
+is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
+supporting the remix culture - and also for making IT fun again! Live long and prosper! :)
+All the crap in the code is by me of course. Please feel free to refacture, fix, tinker & break.
 
 TODO
 ----

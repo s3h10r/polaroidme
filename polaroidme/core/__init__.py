@@ -262,6 +262,7 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
         return image
     size = font_size
     f_font = get_resource_file(f_font)
+    print("huuuuuuuuUUUUUooo %s %i" %(f_font,font_size))
     try:
         font_title = ImageFont.truetype(f_font, font_size)
     except:
