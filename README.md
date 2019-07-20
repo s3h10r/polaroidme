@@ -11,11 +11,7 @@ supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-
-Because the author likes generative art polaroidme is also some playgound. The
-things in the (frequently come and going) "filter/edit/generator"-sections are
-definitely more often broken than working. :-D Anyways: this little project
-was intitiated by the need for a script which creates some high-resolution contact sheets
+polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
 That's all. Maybe it can be usefull for you too.
 
@@ -212,10 +208,9 @@ polaroidme uses codesnippets from the following Open Source projects:
  - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
    Copyright (c) 2018 Jianzhu Guo, MIT License
 
-The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f)  
-is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
+The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f) is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
 supporting the remix culture - and also for making IT fun again! Live long and prosper! :)
-All the crap in the code is by me of course. Please feel free to refacture, fix, tinker & break.
+All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ... 
 
 TODO
 ----
