@@ -158,9 +158,9 @@ def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf', color=
     image = image.crop(c_box)
     return image
 
-def convert_ascii_to_image(image_as_ascii):
+def convert_ascii_to_image(image_as_ascii, color = (0,0,0)):
     ascii_str = image_as_ascii
-    image = _convert_ascii_to_img(ascii_str)
+    image = _convert_ascii_to_img(ascii_str, color=color)
     return image
 # ---
 

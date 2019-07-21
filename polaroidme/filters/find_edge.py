@@ -12,7 +12,7 @@ from PIL import Image
 from .adjustment import invert
 from .utils import Matrix33
 
-def find_edge(img, angle):
+def find_edge(img, angle = 60):
     '''
     @效果：查找边缘
     @param img: instance of Image

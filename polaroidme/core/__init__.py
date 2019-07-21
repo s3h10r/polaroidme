@@ -22,6 +22,7 @@ from polaroidme.filters.glowing_edge import glowing_edge
 from polaroidme.filters.ice import ice
 from polaroidme.filters.molten import molten
 from polaroidme.filters.mosaic import mosaic
+from polaroidme.generators import psychedelic as gen_psychedelic
 from polaroidme.helpers import get_resource_file, show_error
 from polaroidme.helpers.gfx import get_exif
 from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
@@ -57,7 +58,14 @@ RESOURCE_CONFIG_FILE="polaroidme.conf"
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 TEMPLATE = None
 
+FILTERS = [ 'ascii', 'ascii-color', 'pixelsort' ,
+            'diffuse', 'emboss', 'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic',
+          ]
+GENERATORS = ['psychedelic',]
+
+
 __version__ = (0,9,33)
+
 
 def get_version():
     return(__version__)
@@ -166,12 +174,13 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
         'TEMPLATE_KEY' : TEMPLATE,
         'TEMPLATE_VALUE': None,# we fill this if template ist != None
+        'FILTERS' : FILTERS,
+        'GENERATORS' : GENERATORS,
         }
         if template:
             SETTINGS['TEMPLATE_KEY'] = os.path.basename(TEMPLATE),
             SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(TEMPLATE)],
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
-
 
 def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None, bg_color_inner=(255,255,255),filter_func=None):
     """
@@ -219,7 +228,6 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
         img = add_text(img, caption, description, f_font = f_font, font_size = font_size)
     return img
 
-
 def _paste_into_template(image = None, template = './templates/fzm-Polaroid.Frame-01.jpg', box=None):
     """
     """
@@ -246,7 +254,6 @@ def _paste_into_template(image = None, template = './templates/fzm-Polaroid.Fram
     #print(region2copy.size, box)
     img_tpl.paste(region2copy,box)
     return img_tpl
-
 
 def rotate_image(image, rotation):
     """
@@ -335,8 +342,15 @@ def main(args):
     bg_color_inner = COLOR_BG_INNER
     # process options
     source = args['<source-image>']
-    if source.lower() in('-', 'stdin'):
-        raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
+    generator = None
+    if source:
+        if source.lower() in('-', 'stdin'):
+            raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
+    else:
+        generator = args['--generator'] # surpriseme :)
+        if not generator in GENERATORS:
+            show_error("Hu? Sorry no generator '%s' unknown. Valid choices are: %s" % (generator, GENERATORS))
+
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
@@ -351,8 +365,9 @@ def main(args):
         align = args['--alignment']
     if args['--title']:
         title = args['--title']
+    add_meta_to_title = False
     if args['--title-meta']:
-        add_exif_to_title = True
+        add_meta_to_title = True # exif data | infos about choosen generator's-params
     if args['--font']:
         f_font = args['--font']
     else:
@@ -366,6 +381,8 @@ def main(args):
     edit_filter = None
     if args['--filter']:
         edit_filter = args['--filter']
+        if not edit_filter in FILTERS:
+            show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (edit_filter,FILTERS))
     # ---
     if template:
         size = None # needs to be calculated
@@ -374,42 +391,53 @@ def main(args):
     template = TEMPLATE
     if args['--max-size']:
         max_size = int(args['--max-size'])
+    rand_seed = random.randrange(sys.maxsize)
     # heree we go...
-    if add_exif_to_title:
-        exif_data = get_exif(source)
-        if ('EXIF DateTimeOriginal') in exif_data:
-            v = exif_data['EXIF DateTimeOriginal']
-            timestamp = dt.datetime.strptime(str(v), '%Y:%m:%d %H:%M:%S')
-            meta = timestamp
-            if len(title) > 0:
-                title += " "
-            title += "%s" % (timestamp)
-        else:
-            log.warning("--title-meta set but exif_data about DateTime unavailable for the input-image. :-/ : {}; ;".format(fn))
-    name, ext = os.path.splitext(source)
-    if not os.path.isfile(source):
-        show_error("Source file '%s' does not exist." % source)
-    if not target:
-        target = name + ".polaroid.png"
-    if not align in ("left", "right", "top", "bottom", "center"):
-        show_error("Unknown alignment %s." % align)
+    if source: # usually source is an image
+        if add_meta_to_title:
+            exif_data = get_exif(source)
+            if ('EXIF DateTimeOriginal') in exif_data:
+                v = exif_data['EXIF DateTimeOriginal']
+                timestamp = dt.datetime.strptime(str(v), '%Y:%m:%d %H:%M:%S')
+                meta = timestamp
+            else:
+                log.warning("--title-meta set but exif_data about DateTime unavailable for the input-image. :-/ : {}; ;".format(fn))
+        name, ext = os.path.splitext(source)
+        if not os.path.isfile(source):
+            show_error("Source file '%s' does not exist." % source)
+        if not target:
+            target = name + ".polaroid.png"
+        if not align in ("left", "right", "top", "bottom", "center"):
+            show_error("Unknown alignment %s." % align)
+    else: # but source can also be a generative art thingy
+        if generator == 'psychedelic':
+            #source, meta = gen_psychedelic(pixels_per_unit = size, seed = None)
+            source, meta = gen_psychedelic(pixels_per_unit = 150, seed = rand_seed)
+    if add_meta_to_title:
+        if len(title) > 0:
+            title += " "
+        title += "%s" % (meta)
     # Prepare our resources
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
+    if not isinstance(source,Image.Image): # that's the case if we're not using a generator
+        source = Image.open(source)
     filter_func = None
     if edit_filter:
-        log.warning("%s is experimental" % edit_filter)
+        log.warning("--filter %s is experimental" % edit_filter)
+        img = source
         if edit_filter in ('2ascii', 'ascii'):
-            img = Image.open(source)
             img_as_ascii = convert_image_to_ascii(img)
-            img = convert_ascii_to_image(img_as_ascii)
+            img = convert_ascii_to_image(img_as_ascii, color=(0,0,0))
             source = img
+        elif edit_filter in ('2ascii-color', 'ascii-color'):
+            img_as_ascii = convert_image_to_ascii(img)
+            img = convert_ascii_to_image(img_as_ascii, color=(0,0,240))
         elif edit_filter in ('pixelsort'):
             algos = [1,10,20]
             idx = random.randint(0,2)
             algo = algos[idx]
             log.info("pixelsort algo %i" % algo)
-            img = Image.open(source)
             img = do_pixelsort(img, algo=algo)
             source = img
         elif edit_filter in ('diffuse'):
@@ -426,7 +454,6 @@ def main(args):
             filter_func = molten
         elif edit_filter in ('mosaic'):
             filter_func = mosaic
-
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
@@ -449,5 +476,6 @@ def main(args):
             y_new = int(img.height * factor)
             img = img.resize((x_new,y_new),Image.ANTIALIAS)
     # yai, finally ... :)
+    log.info("seed %f" % rand_seed) # btw. TODO: for being able to reproduce random thingys: add option --set-seed 
     img.save(target)
     print(target)

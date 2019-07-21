@@ -14,6 +14,10 @@ echo "...weiste bescheid ;) #hierso #generativeart #bananencode #100bugs101bug10
  "
 exit 1
 
+./pom ./input/IMG_20190720_122246.jpg -o ./examples/smartphone-endofgreenshirt.png  --title "Shirt" --title-meta --m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
+
+./pom ./input/IMG_20190720_135807-01.jpeg -o ./examples/smartphone-john.png --title "yu-huh" --title-meta -m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
+
 pom ${DIR_IN}DSCF4700.jpg -o test-00.png --title "test-00. --title" --max-size 400 || exit 1
 pom ${DIR_IN}octocat.png -o test-01.png --title "test-01B --edit 2ascii" --edit 2ascii || exit 1
 pom ${DIR_IN}reny_DSCF3307.jpg -o test-01C.png --title "--edit 2ascii" --edit 2ascii --title-meta --template ./templates/trimmed-fzm-Polaroid.Frame-01.jpg --config ${FQFN_CONF}|| exit 1
