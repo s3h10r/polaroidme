@@ -31,7 +31,7 @@ log.addHandler(handler)
 # ---
 
 # Image size constraints
-IMAGE_SIZE   = 800                      # the thumbnail size (= the inner picture)
+IMAGE_SIZE   = 600                      # the thumbnail size (= the inner picture)
 IMAGE_TOP    = int(IMAGE_SIZE / 16)     # added space on top
 IMAGE_BOTTOM = int(IMAGE_SIZE / 5.333)  # added space on bottom
 IMAGE_LEFT   = int(IMAGE_SIZE / 16)     # ...
@@ -112,10 +112,17 @@ def setup_globals(size, configfile=None, template = None, show = True):
         if w != h:
             log.warning("boxdefinition for template {} is not a square. w,h {},{}".format(k,w,h))
             log.warning("auto-fixing => making it square...")
-            if w > h: #AUTO_FIX
+            if w < h: #AUTO_FIX
                 box[3] += (w - h)
+                # now let's try to center
+                box[1] += int((h - w) / 2)
+                box[3] += int((h - w) / 2)
             else:
                 box[2] += (h - w)
+                # now let's try to center  
+                box[0] += int(h -w / 2)
+                box[2] += int(h -w / 2)
+
             TEMPLATE_BOXES[os.path.basename(template)] = [box[0], box[1], box[2], box[3]]
             box = TEMPLATE_BOXES[os.path.basename(template)]
             w = box[2] - box[0]
@@ -191,6 +198,7 @@ def make_polaroid(source, size, options, align, title, f_font = None, font_size 
         img = crop_image_to_square(img, align)
     else:
         img = scale_image_to_square(img, bg_color=bg_color_inner)
+        img = _add_border(img, BORDER_SIZE, COLOR_BORDER)
     img = scale_square_image(img, size)
     if filter_func:
         img = filter_func(img)
@@ -243,6 +251,13 @@ def rotate_image(image, rotation):
     elif rotation == "anticlockwise":
         image = image.rotate(90)
     return image
+
+def _add_border(image, border_size = 3, color_border = COLOR_BORDER):
+    w, h = image.size
+    assert(w==h)
+    img = Image.new("RGBA", (w + border_size, h + border_size), color_border)
+    img.paste(image, (border_size,border_size))
+    return img
 
 def add_frame(image, border_size = 3, color_frame = COLOR_FRAME, color_border = COLOR_BORDER):
     """
@@ -350,7 +365,7 @@ def main(args):
         size = None # needs to be calculated
     setup_globals(size, configfile, template)
     size = IMAGE_SIZE
-    template = TEMPLATE 
+    template = TEMPLATE
     if args['--max-size']:
         max_size = int(args['--max-size'])
     # heree we go...
