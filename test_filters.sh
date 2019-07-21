@@ -1,4 +1,4 @@
-#/bin/bash -vx
+#!/bin/bash -vx
 FILTERS=('2ascii' 'pixelsort' 'diffuse' 'emboss' 'find_edge' 'glowing_edge' 'ice' 'molten' 'mosaic')
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 FIN="./input/octocat.png"
