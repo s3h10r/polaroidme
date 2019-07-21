@@ -71,8 +71,8 @@ you through the process.
 more example output
 -------------------
 
-<img src="examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"
-<img src="examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48% title="Psychedelisches sortiert"></img>
+<img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
+<img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
 <img src="/examples/test-04D.png" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
 <!--
@@ -252,8 +252,9 @@ TODO
  - restructuring the messy parts a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
  - adds minimalistic filter-funcs for fun (asciiart, pixelsorting, ...)
  - includes serious filters from https://github.com/Tinker-S/SomeImageFilterWithPython
+ - enables filter-chaining possibility
  - support random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
- - adds `--generator` option as an alternative to source-image and getting phonky instead
+ - adds `--generator` option as an alternative to source-image and getting phonky instead :D
  - contactsheet supports filtering by time-window (PLANNED)
  - improved template support
  - bugfixes & new bugs :)
