@@ -1,8 +1,6 @@
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
-**0.9.94 restructures the package accourding to the py3 [packaging](https://docs.python.org/3.6/tutorial/modules.html#packages)**
-
 polaroidme is a command-line-tool for placing an image into a
 Polaroid-like frame and optionally put a title / description or meta infos
 out of EXIF-data on the bottom.
@@ -13,11 +11,7 @@ supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-
-Because the author likes generative art polaroidme is also some playgound. The
-things in the (frequently come and going) "filter/edit/generator"-sections are
-definitely more often broken than working. :-D Anyways: this little project
-was intitiated by the need for a script which creates some high-resolution contact sheets
+polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
 That's all. Maybe it can be usefull for you too.
 
@@ -117,7 +111,8 @@ foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
 Use `polaroidme --help` to get a description of all available options:
-```
+
+```console
 foo@bar:~$ polaroidme --help
 
 polaroidme - converts an image into vintage polaroid style
@@ -206,21 +201,26 @@ foo@bar:~$
 
 Credits
 -------
-Öh. Mainly stackoverflow of course... :D For the ASCII-art function
-polaroidme uses codesnippets from the following Open Source projects:
+Öh. Mainly stackoverflow of course... :D 
 
- - [asciify](https://github.com/s3h10r/asciify)
+For the ASCII-art function polaroidme uses codesnippets from the following Open Source projects:
+
+ - [asciify](https://github.com/RameshAditya/asciify)
  - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
    Copyright (c) 2018 Jianzhu Guo, MIT License
 
-The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f)  
-is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
-supporting the remix culture - and also for making IT fun again! Live long and prosper! :)
-All the crap in the code is by me of course. Please feel free to refacture, fix, tinker & break.
+The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f) is heavily inspired (not to say copied) from Eric Davidson. 
+
+Some filters are taken from:
+
+ - [https://github.com/Tinker-S/SomeImageFilterWithPython](https://github.com/Tinker-S/SomeImageFilterWithPython)
+
+**Thank you guys for sharing your ideas for free and supporting the remix culture - and also for making IT fun again!** Live long and prosper! :)
+All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ...
 
 TODO
 ----
- - minimalistic & fun to use plugins: ascciart, pixelsort, texture-blending, ...
+ - minimalistic & fun to use plugins (edit/filter/generate): ascciart, pixelsort, texture-blending, ... #generativeart
  - support more shapes than square (means: much more template usecases :))
  - custom colors (arg, means, ...)
  - finish contactsheet (feature)
@@ -229,13 +229,16 @@ TODO
  - option to put a description-text / link / Copyleft below title / watermark
  - rewrite corkboard (lab-branch) and add it to master
  - basic stats & picture analysis
+ - include some templates(-configuration) for easypeasy usage
 
  changelog
  ---------
 
  **0.9.33** (work in progress)
- - restructuring the messy parts a bit ()[packages](https://docs.python.org/3.6/tutorial/modules.html#packages))
- - minimalistic edit/filter-funcs for fun (asciiart, pixelsorting, ...)
+ - restructuring the messy parts a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
+ - adds minimalistic filter-funcs for fun (asciiart, pixelsorting, ...)
+ - includes serious filters from https://github.com/Tinker-S/SomeImageFilterWithPython
+ - support random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
  - contactsheet supports filtering by time-window
  - improved template support
  - bugfixes & new bugs :)

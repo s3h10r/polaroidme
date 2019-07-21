@@ -49,6 +49,7 @@ RESOURCE_FONT_SIZE = int(IMAGE_BOTTOM - (IMAGE_BOTTOM * 0.9))
 RESOURCE_CONFIG_FILE="polaroidme.conf"
 
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
+TEMPLATE = None
 
 __version__ = (0,9,33)
 
@@ -66,6 +67,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
     global BORDER_SIZE
     global RESOURCE_FONT_SIZE
     global TEMPLATE_BOXES
+    global TEMPLATE
 
     if configfile:
         if not (os.path.isfile(configfile)):
@@ -98,7 +100,12 @@ def setup_globals(size, configfile=None, template = None, show = True):
         for k in TEMPLATE_BOXES:
             TEMPLATE_BOXES[k] = [int(round(f)) for f in TEMPLATE_BOXES[k]]
         # ---
-
+        if template.endswith('random') or template.endswith('rand'):
+            log.info("choosing a random template...")
+            templates = list(TEMPLATE_BOXES.keys())
+            rnd = random.randint(0,len(TEMPLATE_BOXES) - 1)
+            template = os.path.dirname(template) + "/" + templates[rnd]
+        TEMPLATE=template
         box = TEMPLATE_BOXES[os.path.basename(template)]
         w = box[2] - box[0]
         h = box[3] - box[1]
@@ -144,12 +151,12 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'IMAGE_RIGHT' : IMAGE_RIGHT,
         'BORDER_SIZE' : BORDER_SIZE,
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
-        'TEMPLATE_KEY' : template,
+        'TEMPLATE_KEY' : TEMPLATE,
         'TEMPLATE_VALUE': None,# we fill this if template ist != None
         }
         if template:
-            SETTINGS['TEMPLATE_KEY'] = os.path.basename(template),
-            SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(template)],
+            SETTINGS['TEMPLATE_KEY'] = os.path.basename(TEMPLATE),
+            SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(TEMPLATE)],
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 
@@ -343,6 +350,7 @@ def main(args):
         size = None # needs to be calculated
     setup_globals(size, configfile, template)
     size = IMAGE_SIZE
+    template = TEMPLATE 
     if args['--max-size']:
         max_size = int(args['--max-size'])
     # heree we go...
