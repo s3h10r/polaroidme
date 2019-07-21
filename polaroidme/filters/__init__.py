@@ -13,7 +13,14 @@ import os
 import random
 import sys
 
-from ..helpers.gfx import get_exif, scale_image_to_square, scale_image, scale_square_image
+from ..helpers.gfx import get_exif, scale_image_to_square, scale_image, scale_square_image, trim
+from .diffuse import diffuse
+from .emboss import emboss
+from .find_edge import find_edge
+from .glowing_edge import glowing_edge
+from .ice import ice
+from .molten import molten
+from .mosaic import mosaic
 
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 
@@ -147,7 +154,7 @@ def _convert_ascii_to_img(ascii_str, font_path='fonts/Menlo-Regular.ttf', color=
     if mode == 'L':
         c_box = ImageOps.invert(image).getbbox()
     else:
-        c_box = image.getbbox()
+        return trim(image)
     image = image.crop(c_box)
     return image
 

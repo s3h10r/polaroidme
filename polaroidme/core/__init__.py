@@ -15,10 +15,16 @@ from PIL import Image, ImageDraw, ImageFont, ExifTags
 
 from polaroidme.filters import convert_ascii_to_image, convert_image_to_ascii
 from polaroidme.filters.pixelsort import do_pixelsort
+from polaroidme.filters import diffuse
+from polaroidme.filters.emboss import emboss
+from polaroidme.filters.find_edge import find_edge
+from polaroidme.filters.glowing_edge import glowing_edge
+from polaroidme.filters.ice import ice
+from polaroidme.filters.molten import molten
+from polaroidme.filters.mosaic import mosaic
 from polaroidme.helpers import get_resource_file, show_error
 from polaroidme.helpers.gfx import get_exif
 from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
-
 
 
 # --- configure logging
@@ -119,7 +125,7 @@ def setup_globals(size, configfile=None, template = None, show = True):
                 box[3] += int((h - w) / 2)
             else:
                 box[2] += (h - w)
-                # now let's try to center  
+                # now let's try to center
                 box[0] += int(h -w / 2)
                 box[2] += int(h -w / 2)
 
@@ -358,8 +364,8 @@ def main(args):
     if args['--config']:
         configfile = args['--config']
     edit_filter = None
-    if args['--edit']:
-        edit_filter = args['--edit']
+    if args['--filter']:
+        edit_filter = args['--filter']
     # ---
     if template:
         size = None # needs to be calculated
@@ -390,6 +396,7 @@ def main(args):
     # Prepare our resources
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
+    filter_func = None
     if edit_filter:
         log.warning("%s is experimental" % edit_filter)
         if edit_filter in ('2ascii', 'ascii'):
@@ -405,12 +412,28 @@ def main(args):
             img = Image.open(source)
             img = do_pixelsort(img, algo=algo)
             source = img
+        elif edit_filter in ('diffuse'):
+            filter_func = diffuse
+        elif edit_filter in ('emboss'):
+            filter_func = emboss
+        elif edit_filter in ('find_edge'):
+            filter_func = find_edge
+        elif edit_filter in ('glowing_edge'):
+            filter_func = glowing_edge
+        elif edit_filter in ('ice'):
+            filter_func = ice
+        elif edit_filter in ('molten'):
+            filter_func = molten
+        elif edit_filter in ('mosaic'):
+            filter_func = mosaic
+
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
         title = title, f_font = f_font, font_size = font_size,
         template = template,
-        bg_color_inner = bg_color_inner)
+        bg_color_inner = bg_color_inner,
+        filter_func = filter_func)
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     # ---  if --max-size is given: check if currently bigger and downscale if necessary...
     if max_size:

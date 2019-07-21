@@ -5,7 +5,7 @@ from operator import itemgetter
 import os
 
 import exifread
-from PIL import Image
+from PIL import Image, ImageChops
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -192,3 +192,11 @@ def scale_image(image, new_width=600):
     new_dim = (new_w, new_h)
     image = image.resize(new_dim)
     return image
+
+def trim(im):
+    bg = Image.new(im.mode, im.size, im.getpixel((0,0)))
+    diff = ImageChops.difference(im, bg)
+    diff = ImageChops.add(diff, diff, 2.0, -100)
+    bbox = diff.getbbox()
+    if bbox:
+        return im.crop(bbox)
