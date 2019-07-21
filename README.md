@@ -13,7 +13,9 @@ supports high-res output and gets it's job done well.
 
 polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
-That's all. Maybe it can be usefull for you too.
+
+Since Version 0.9.4 it polaroidme is also used for publishing minimalistic
+generative art projects. This functionality is inspiring + phonky but in a very early state yet.
 
 polaroidme is simple to use:
 
@@ -69,10 +71,10 @@ you through the process.
 more example output
 -------------------
 
+<img src="examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"
+<img src="examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48% title="Psychedelisches sortiert"></img>
 <img src="/examples/test-04D.png" width="48%"></img>
 <img src="/examples/example.corkboard.jpg" width="48%"></img>
-<img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
-<img src="/examples/test-01D.png" width="48%" title="--edit pixelsort (random algo)"></img>
 <!--
 <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
 -->
@@ -142,9 +144,11 @@ Options:
   --clockwise       Rotate the image clockwise before processing
   --crop            the images will be cropped to fit. see --alignment
   -f, --font=<f>    Specify (ttf-)font to use (full path!)
-  --filter=<str>    ascii, ascii-color, pixelsort, diffuse, emboss, find_edge, glowing_edge,
-                    ice, molten, mosaic, ...
-  --filter-chain=<s1,s2,sN> # TODO
+  --filter=<str>    One or more (seperated by comma) of
+                    'ascii', 'ascii-color', 'pixelsort', 'diffuse', 'emboss',
+                    'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic', ...
+                    If more than one filter is used (filterchain) they will be applied in
+                    the sequence given.
   --generator=<str> Get phonky & create some generative art instead of using an input-image.
   -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
   -t,--title=<str>  Defines an optional caption to be displayed at the
@@ -208,17 +212,18 @@ foo@bar:~$
 
 Credits
 -------
-Öh. Mainly stackoverflow of course... :D
 
-For the ASCII-art function polaroidme uses codesnippets from the following Open Source projects:
+The ASCII-art filter relies on codesnippets from the following Open Source projects:
 
  - [asciify](https://github.com/RameshAditya/asciify)
  - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
    Copyright (c) 2018 Jianzhu Guo, MIT License
 
-The generator 'sprites' is  [heavily inspired (not to say copied) from Eric Davidson](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f).
+The generator 'sprites' is made with [code by Eric Davidson](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f).
 
-The generator 'psychedelic' uses the wonderfull code of ["Random (Psychedelic) Art, and a Pinch of Python" by Jeremy Kun  ](http://jeremykun.com/2012/01/01/random-psychedelic-art/).
+The generator 'psychedelic' is the wonderfull code of ["Random (Psychedelic) Art, and a Pinch of Python" by Jeremy Kun](http://jeremykun.com/2012/01/01/random-psychedelic-art/).
+
+The generator 'circles' is heavily [inspired by Kevin Howbrook's Squares|https://medium.com/@kevinhowbrook/learning-python-and-being-creative-making-art-with-code-da02880e3738]
 
 Some filters are taken from:
 

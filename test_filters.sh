@@ -1,5 +1,5 @@
 #!/bin/bash -vx
-FILTERS=('2ascii' 'pixelsort' 'diffuse' 'emboss' 'find_edge' 'glowing_edge' 'ice' 'molten' 'mosaic')
+FILTERS=('ascii' 'pixelsort' 'diffuse' 'emboss' 'find_edge' 'glowing_edge' 'ice' 'molten' 'mosaic' 'oil' 'oil2')
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 FIN="./input/octocat.png"
 FIN="./input/IMG_20190720_122246.jpg"

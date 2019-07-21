@@ -22,6 +22,9 @@ from polaroidme.filters.glowing_edge import glowing_edge
 from polaroidme.filters.ice import ice
 from polaroidme.filters.molten import molten
 from polaroidme.filters.mosaic import mosaic
+from polaroidme.filters.oil_painting import oil_painting as oil
+from polaroidme.filters.oil_painting2 import oil_painting as oil2
+
 from polaroidme.generators import psychedelic as gen_psychedelic
 from polaroidme.helpers import get_resource_file, show_error
 from polaroidme.helpers.gfx import get_exif
@@ -60,6 +63,7 @@ TEMPLATE = None
 
 FILTERS = [ 'ascii', 'ascii-color', 'pixelsort' ,
             'diffuse', 'emboss', 'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic',
+            'oil', 'oil2',
           ]
 GENERATORS = ['psychedelic',]
 
@@ -297,7 +301,6 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
         return image
     size = font_size
     f_font = get_resource_file(f_font)
-    print("huuuuuuuuUUUUUooo %s %i" %(f_font,font_size))
     try:
         font_title = ImageFont.truetype(f_font, font_size)
     except:
@@ -324,6 +327,53 @@ def add_text(image, title = None, description = None, f_font = RESOURCE_FONT, fo
     )
     return image
 
+def _apply_filters(image, filters = None, filters_args = None):
+    """
+    applies filter(s) to the image
+    return PIL Image
+    """
+    img = image
+    for edit_filter in filters:
+        filter_func = None
+        if edit_filter in ('2ascii', 'ascii'):
+            img_as_ascii = convert_image_to_ascii(img)
+            img = convert_ascii_to_image(img_as_ascii, color=(0,0,0))
+        elif edit_filter in ('2ascii-color', 'ascii-color'):
+            img_as_ascii = convert_image_to_ascii(img)
+            img = convert_ascii_to_image(img_as_ascii, color=(0,0,240))
+        elif edit_filter in ('pixelsort'):
+            algos = [1,10,20]
+            idx = random.randint(0,2)
+            algo = algos[idx]
+            log.info("pixelsort algo %i" % algo)
+            img = do_pixelsort(img, algo=algo)
+            source = img
+        elif edit_filter in ('mosaic'):
+            block_size = int(image.size[0] / random.randint(2,32))
+            img = mosaic(image, block_size = block_size)
+        elif edit_filter in ('diffuse'):
+            filter_func = diffuse
+        elif edit_filter in ('emboss'):
+            filter_func = emboss
+        elif edit_filter in ('find_edge'):
+            filter_func = find_edge
+        elif edit_filter in ('glowing_edge'):
+            filter_func = glowing_edge
+        elif edit_filter in ('ice'):
+            filter_func = ice
+        elif edit_filter in ('molten'):
+            filter_func = molten
+        elif edit_filter in ('oil'):
+            brush_size = random.randint(1,8)
+            roughness = random.randint(1,255)            
+            img = oil(img)
+        elif edit_filter in ('oil2'):
+            img = oil2(img)
+
+        if filter_func:
+            img = filter_func(img)
+
+    return img
 
 #if __name__ == '__main__':
 def main(args):
@@ -378,11 +428,12 @@ def main(args):
         template = args['--template']
     if args['--config']:
         configfile = args['--config']
-    edit_filter = None
+    apply_filters = None
     if args['--filter']:
-        edit_filter = args['--filter']
-        if not edit_filter in FILTERS:
-            show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (edit_filter,FILTERS))
+        apply_filters = args['--filter'].split(',')
+        for filter in apply_filters:
+            if filter not in FILTERS:
+                show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (filter,FILTERS))
     # ---
     if template:
         size = None # needs to be calculated
@@ -422,45 +473,18 @@ def main(args):
     font_size = IMAGE_BOTTOM
     if not isinstance(source,Image.Image): # that's the case if we're not using a generator
         source = Image.open(source)
-    filter_func = None
-    if edit_filter:
-        log.warning("--filter %s is experimental" % edit_filter)
-        img = source
-        if edit_filter in ('2ascii', 'ascii'):
-            img_as_ascii = convert_image_to_ascii(img)
-            img = convert_ascii_to_image(img_as_ascii, color=(0,0,0))
-            source = img
-        elif edit_filter in ('2ascii-color', 'ascii-color'):
-            img_as_ascii = convert_image_to_ascii(img)
-            img = convert_ascii_to_image(img_as_ascii, color=(0,0,240))
-        elif edit_filter in ('pixelsort'):
-            algos = [1,10,20]
-            idx = random.randint(0,2)
-            algo = algos[idx]
-            log.info("pixelsort algo %i" % algo)
-            img = do_pixelsort(img, algo=algo)
-            source = img
-        elif edit_filter in ('diffuse'):
-            filter_func = diffuse
-        elif edit_filter in ('emboss'):
-            filter_func = emboss
-        elif edit_filter in ('find_edge'):
-            filter_func = find_edge
-        elif edit_filter in ('glowing_edge'):
-            filter_func = glowing_edge
-        elif edit_filter in ('ice'):
-            filter_func = ice
-        elif edit_filter in ('molten'):
-            filter_func = molten
-        elif edit_filter in ('mosaic'):
-            filter_func = mosaic
+    if apply_filters:
+        log.warning("--filter is experimental. you can chain filters via comma-seperator filter1,filter2,...")
+        img = _apply_filters(image=source, filters = apply_filters, filters_args = [])
+        source = img
+
     # finally create the polaroid.
     img = make_polaroid(
         source = source, size = size, options = options, align =align,
         title = title, f_font = f_font, font_size = font_size,
         template = template,
         bg_color_inner = bg_color_inner,
-        filter_func = filter_func)
+        )
     log.debug("size: %i %i" % (img.size[0], img.size[1]))
     # ---  if --max-size is given: check if currently bigger and downscale if necessary...
     if max_size:
@@ -476,6 +500,6 @@ def main(args):
             y_new = int(img.height * factor)
             img = img.resize((x_new,y_new),Image.ANTIALIAS)
     # yai, finally ... :)
-    log.info("seed %f" % rand_seed) # btw. TODO: for being able to reproduce random thingys: add option --set-seed 
+    log.info("seed %f" % rand_seed) # btw. TODO: for being able to reproduce random thingys: add option --set-seed
     img.save(target)
     print(target)

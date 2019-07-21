@@ -8,15 +8,12 @@ Created on 2011-7-8
 
 from PIL import Image
 
-def mosaic(img, block_size = 25):
+def mosaic(img, block_size = 32):
     '''
-    @效果：马赛克
     @param img: instance of Image
-    @param block_size: 方块大小，范围[1, 32]
+    @param block_size: [1, N]
     @return: instance of Image
     '''
-
-    block_size = min(max(block_size, 1), 32)
 
     if img.mode != "RGBA":
         img = img.convert("RGBA")

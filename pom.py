@@ -28,9 +28,11 @@ Options:
   --clockwise       Rotate the image clockwise before processing
   --crop            the images will be cropped to fit. see --alignment
   -f, --font=<f>    Specify (ttf-)font to use (full path!)
-  --filter=<str>    ascii, ascii-color, pixelsort, diffuse, emboss, find_edge, glowing_edge,
-                    ice, molten, mosaic, ...
-  --filter-chain=<s1,s2,sN> # TODO
+  --filter=<str>    One or more (seperated by comma) of
+                    'ascii', 'ascii-color', 'pixelsort', 'diffuse', 'emboss',
+                    'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic', ...
+                    If more than one filter is used (filterchain) they will be applied in
+                    the sequence given.
   --generator=<str> Get phonky & create some generative art instead of using an input-image.
   -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
   -t,--title=<str>  Defines an optional caption to be displayed at the
