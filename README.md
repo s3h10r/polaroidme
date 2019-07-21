@@ -13,7 +13,11 @@ supports high-res output and gets it's job done well.
 
 polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
-That's all. Maybe it can be usefull for you too.
+
+Since Version 0.9.3 it is also used for publishing minimalistic
+generative art projects. This functionality is inspiring + phonky but in a very early state yet
+and therefore no pypi-package of this available yet.
+
 
 polaroidme is simple to use:
 
@@ -31,7 +35,7 @@ Example output:
 
 If you need more control over the output polaroidme offers you plenty of options.
 The `--nocrop` Flag is an example of an option which is handy if your input images
-are not in square-format and you don't want to get parts cropped (default).   
+are not in square-format and you don't want to get parts cropped (default).
 
 Though polaroidme is intended and commonly used as a command-line-tool it is also
 a regular python-module (since version 0.9.2). Using it in other software is
@@ -51,6 +55,9 @@ your needs take a look at the project's github-repo and check out the
 
 Contributions are welcome, and they are greatly appreciated!
 
+<img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
+<img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
+
 installation
 ------------
 
@@ -65,18 +72,6 @@ the most recent stable release.
 
 If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
 you through the process.
-
-more example output
--------------------
-
-<img src="/examples/test-04D.png" width="48%"></img>
-<img src="/examples/example.corkboard.jpg" width="48%"></img>
-<img src="/examples/DSCF6061.polaroid.jpg" width="48%"></img>
-<img src="/examples/test-01D.png" width="48%" title="--edit pixelsort (random algo)"></img>
-<!--
-<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
--->
-<!-- TODO: add contactsheet example -->
 
 usage
 -----
@@ -201,20 +196,29 @@ foo@bar:~$
 
 Credits
 -------
-Öh. Mainly stackoverflow of course... :D For the ASCII-art function
-polaroidme uses codesnippets from the following Open Source projects:
 
- - [asciify](https://github.com/s3h10r/asciify)
+The ASCII-art filter relies on codesnippets from the following Open Source projects:
+
+ - [asciify](https://github.com/RameshAditya/asciify)
  - [ImageToAscii](https://github.com/cleardusk/ImageToAscii/blob/master/img_to_ascii.py)
    Copyright (c) 2018 Jianzhu Guo, MIT License
 
-The [space invaders thingy in less than 100 lines](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f) is heavily inspired (not to say copied) from Eric Davidson. Thank you guys for sharing your ideas for free and
-supporting the remix culture - and also for making IT fun again! Live long and prosper! :)
-All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ... 
+The generator 'sprites' is made with [code by Eric Davidson](https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f).
+
+The generator 'psychedelic' is the wonderfull code of ["Random (Psychedelic) Art, and a Pinch of Python" by Jeremy Kun](http://jeremykun.com/2012/01/01/random-psychedelic-art/).
+
+The generator 'circles' is heavily [inspired by Kevin Howbrook's Squares|https://medium.com/@kevinhowbrook/learning-python-and-being-creative-making-art-with-code-da02880e3738]
+
+Some filters are taken from:
+
+ - [https://github.com/Tinker-S/SomeImageFilterWithPython](https://github.com/Tinker-S/SomeImageFilterWithPython)
+
+**Thank you guys for sharing your ideas for free and supporting the remix culture - and also for making IT fun again!** Live long and prosper! :)
+All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ...
 
 TODO
 ----
- - minimalistic & fun to use plugins: ascciart, pixelsort, texture-blending, ...
+ - minimalistic & fun to use plugins (edit/filter/generate): asciiart, pixelsort, texture-blending, ... #generativeart
  - support more shapes than square (means: much more template usecases :))
  - custom colors (arg, means, ...)
  - finish contactsheet (feature)
@@ -223,14 +227,19 @@ TODO
  - option to put a description-text / link / Copyleft below title / watermark
  - rewrite corkboard (lab-branch) and add it to master
  - basic stats & picture analysis
+ - include some templates(-configuration) for easypeasy usage
 
  changelog
  ---------
 
  **0.9.33** (work in progress)
- - restructuring the messy parts a bit ()[packages](https://docs.python.org/3.6/tutorial/modules.html#packages))
- - minimalistic edit/filter-funcs for fun (asciiart, pixelsorting, ...)
- - contactsheet supports filtering by time-window
+ - restructuring the messy parts a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
+ - adds minimalistic filter-funcs for fun (asciiart, pixelsorting, ...)
+ - includes serious filters from https://github.com/Tinker-S/SomeImageFilterWithPython
+ - enables filter-chaining possibility
+ - support random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
+ - adds `--generator` option as an alternative to source-image and getting phonky instead :D
+ - contactsheet supports filtering by time-window (PLANNED)
  - improved template support
  - bugfixes & new bugs :)
 
@@ -242,7 +251,7 @@ TODO
  - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
    (NEW arg `--title-meta`).
  - new args `--size-inner` & `--max-size``
- - several minor bugfixes   
+ - several minor bugfixes
  - contactsheet: sorting options based on EXIF-data
 
  **0.9.2**
@@ -278,6 +287,16 @@ TODO
  - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
  - converts to python3
 
+
+ older example output
+ --------------------
+
+ <img src="/examples/test-04D.png" width="48%"></img>
+ <img src="/examples/example.corkboard.jpg" width="48%"></img>
+ <!--
+ <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
+ -->
+ <!-- TODO: add contactsheet example -->
 
  <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
  <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
