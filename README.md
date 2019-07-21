@@ -53,6 +53,9 @@ your needs take a look at the project's github-repo and check out the
 
 Contributions are welcome, and they are greatly appreciated!
 
+<img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
+<img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
+
 installation
 ------------
 
@@ -67,18 +70,6 @@ the most recent stable release.
 
 If you don't have [pip](https://pip.pypa.io) installed, this [Python installation guide](http://docs.python-guide.org/en/latest/starting/installation/) can guide
 you through the process.
-
-more example output
--------------------
-
-<img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
-<img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
-<img src="/examples/test-04D.png" width="48%"></img>
-<img src="/examples/example.corkboard.jpg" width="48%"></img>
-<!--
-<img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
--->
-<!-- TODO: add contactsheet example -->
 
 usage
 -----
@@ -303,6 +294,16 @@ TODO
  - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
  - converts to python3
 
+
+ older example output
+ --------------------
+
+ <img src="/examples/test-04D.png" width="48%"></img>
+ <img src="/examples/example.corkboard.jpg" width="48%"></img>
+ <!--
+ <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
+ -->
+ <!-- TODO: add contactsheet example -->
 
  <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
  <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
