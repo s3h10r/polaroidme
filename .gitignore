@@ -4,3 +4,4 @@ __pycache__
 /venv/
 /polaroidme/templates/*png
 /polaroidme/templates/*jpg
+/polaroidme/plugins/*
