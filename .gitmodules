@@ -1,6 +1,3 @@
-[submodule "polaroidme/plugins/filters"]
-	path = polaroidme/plugins/filters
-	url = https://github.com/s3h10r/polaroidme-plugins
 [submodule "polaroidme/plugins/generators/random-art"]
 	path = polaroidme/plugins/generators/random-art
 	url = https://github.com/s3h10r/random-art

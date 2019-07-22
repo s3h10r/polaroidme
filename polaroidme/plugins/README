@@ -1,2 +1,0 @@
-a plugin-mechanism makes it easy to add custom filters & generators.
-if you want to roll your own plugin take a look at the `examples/example.py`.
