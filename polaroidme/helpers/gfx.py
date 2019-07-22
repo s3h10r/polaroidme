@@ -102,7 +102,7 @@ def filter_images_by_size(images, min_size, max_size = None):
     """
     pass
 
-def crop_image_to_square(image, align):
+def crop_image_to_square(image, align='center'):
     """
     crops the image into square-format
 
@@ -139,6 +139,7 @@ def crop_image_to_square(image, align):
         else:
             box = (0, 0, image.size[0], image.size[0])
         image = image.crop(box)
+        assert(image.size[0] == image.size[1])
         image.load()
         log.debug("re-cropped to size: %i %i" % (image.size[0], image.size[1]))
     return image

@@ -60,7 +60,7 @@ PLUGINS_DUMMY = {}
 PLUGINS_FILTERS = {}
 PLUGINS_GENERATORS = {}
 
-__version__ = (0,9,36)
+__version__ = (0,9,38)
 
 def get_version():
     return(__version__)
@@ -372,9 +372,20 @@ def _apply_filters(image, filters = None, filters_args = None):
     return PIL Image
     """
     img = image
+    requires_lists = ('composite') # subset of filters which support processing of image-lists
+    supports_lists = requires_lists # filters which support processing of image-lists
+    is_list = isinstance(img, list)
+    if is_list:
+        log.info("got a list of images to apply filters for. only few filters are supporting this: %s" % supports_lists)
     kwargs = None
     for edit_filter in filters:
         filter_func = None
+        if is_list and ( (edit_filter not in supports_lists)):
+                log.warning("%s only supports one image as input (no lists) -> skipping %s" % edit_filter)
+                continue
+        elif is_list == False and edit_filter in requires_lists:
+                log.warning("%s only supports multiple image as input but got only one. -> skipping %s" % (edit_filter, edit_filter))
+                continue
         if edit_filter in ('ascii', 'ascii-color'):
             kwargs = PLUGINS_FILTERS[edit_filter].kwargs
             kwargs['image'] = img
@@ -382,13 +393,10 @@ def _apply_filters(image, filters = None, filters_args = None):
                 kwargs['color'] = (0,0,0)
             else:
                 kwargs['color'] = (0,0,240) #TODO choose random color
-        elif edit_filter in ('pixelsort'):
+        elif edit_filter in ('composite'):
             kwargs = PLUGINS_FILTERS[edit_filter].kwargs
-            algos = [1,10,20]
-            idx = random.randint(0,2)
-            algo = algos[idx]
             kwargs['image'] = img
-            kwargs['algo'] = algo
+            kwargs['alpha'] = 0.5
         elif edit_filter in ('mosaic'):
             kwargs = PLUGINS_FILTERS[edit_filter].kwargs
             block_size = int(img.size[0] / random.randint(2,32))
@@ -401,9 +409,17 @@ def _apply_filters(image, filters = None, filters_args = None):
             kwargs['image'] = img
             kwargs['brush_size'] = brush_size
             kwargs['roughness'] = roughness
+        elif edit_filter in ('pixelsort'):
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
+            algos = [1,10,20]
+            idx = random.randint(0,2)
+            algo = algos[idx]
+            kwargs['image'] = img
+            kwargs['algo'] = algo
         else:
             # generic interface (kwargs always with 'image' and optionally with other arguments set to defaults)
             kwargs = PLUGINS_FILTERS[edit_filter].kwargs
+            kwargs['image'] = img
         log.debug("%s kwargs = %s" % (edit_filter,kwargs))
         img = PLUGINS_FILTERS[edit_filter].run(**kwargs)
     return img
@@ -425,15 +441,18 @@ def main(args):
     add_exif_to_title = None
     bg_color_inner = COLOR_BG_INNER
     # process options
-    source = args['<source-image>']
+    source = args['<source-image>'].split(',') # some filters require a list of images ('composite', ...)
+    if len(source) == 1:
+        source = source[0]
+    log.debug("source : %s" % source)
     generator = None
-    if source:
+    if source and not isinstance(source, list):
         if source.lower() in('-', 'stdin'):
             raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
-    else:
+    elif not source:
         generator = args['--generator'] # surpriseme :)
         if not generator in PLUGINS_GENERATORS:
-            show_error("Hu? Sorry generator '%s' unknown. Valid choices are: %s" % (generator, PLUGIN_GENERATORS.keys()))
+            show_error("Hu? Sorry generator '%s' unknown. Valid choices are: %s" % (generator, PLUGINS_GENERATORS.keys()))
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
@@ -476,7 +495,7 @@ def main(args):
     if args['--max-size']:
         max_size = int(args['--max-size'])
     # here we go...
-    if source: # usually source is an image
+    if not isinstance(source, list):
         if add_meta_to_title:
             exif_data = get_exif(source)
             if ('EXIF DateTimeOriginal') in exif_data:
@@ -505,7 +524,13 @@ def main(args):
     f_font = get_resource_file(f_font)
     font_size = IMAGE_BOTTOM
     if not isinstance(source,Image.Image): # that's the case if we're not using a generator
-        source = Image.open(source)
+        source_inst = []
+        if not isinstance(source,list):
+            source_inst = Image.open(source)
+        else:
+            for src in source:
+                source_inst.append(Image.open(src))
+        source = source_inst
     if apply_filters:
         log.warning("--filter is experimental. you can chain filters via comma-seperator filter1,filter2,...")
         img = _apply_filters(image=source, filters = apply_filters, filters_args = [])

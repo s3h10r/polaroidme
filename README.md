@@ -1,43 +1,50 @@
 polaroidme - converts an image into vintage polaroid style
 ==========================================================
 
-polaroidme is a command-line-tool for placing an image into a
+polaroidme is a simple command-line-tool & python-library mainly for placing an image into a
 Polaroid-like frame and optionally put a title / description or meta infos
-out of EXIF-data on the bottom.
-The default font mimics scribbled handwriting but any (ttf-)font
+out of EXIF-data on the bottom. The default font mimics scribbled handwriting but any (ttf-)font
 which suits your taste is supported. The tool offers basic features
 like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
+why
+---
+
 polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
 of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
+Anyways that is broken & boring now & since Version 0.9.xx polaroidme goes into a more phonky direction and grows up a little bit by supporting chainable filter-plugins (`--filter f1,f2,...,fN`) and some generative art stuff (`--generators`) to play around with. To see if it fits
+your needs take a look at the project's github-repo and check out the
+[examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
 
-Since Version 0.9.4 it polaroidme is also used for publishing minimalistic
-generative art projects. This functionality is inspiring + phonky but in a very early state yet.
+how? (on console)
+-----------------
 
-polaroidme is simple to use:
+The basic usage is simple:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
-To get an appealing rugged analogue style you can [use high-resolution scans of
-polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
+To get an appealing rugged analogue style you can also make "huge" prints of [use high-resolution scans of polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
 
-Example output:
+Example output with templates:
 
 <img src="/examples/test-04.png" width="48%"></img>
 <img src="/examples/test-04B.png" width="48%"></img>
 
-If you need more control over the output polaroidme offers you plenty of options.
-The `--nocrop` Flag is an example of an option which is handy if your input images
-are not in square-format and you don't want to get parts cropped (default).   
+Sadly i don't know a source of CreativeCommons (or alike) licensed scans in that
+high quality and i don't own a good scanner - if you would like to help:
+adding some high-res scans in the FLOSS tradition - means for "free as in freedom, not as in beer" - would be wonderfull! (:
+
+how? (in your app)
+------------------
 
 Though polaroidme is intended and commonly used as a command-line-tool it is also
 a regular python-module (since version 0.9.2). Using it in other software is
-therefore as simple as:
+therefore nearly as simple as:
 
 ```
 #!/usr/bin/env python3
@@ -47,9 +54,10 @@ from polaroidme import make_polaroid
 [...]
 ```
 
-polaroidme is actively maintained & developed (2019). To see if it fits
-your needs take a look at the project's github-repo and check out the
-[examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
+who
+----
+
+polaroidme is made with <3, maintained & developed (2019).
 
 Contributions are welcome, and they are greatly appreciated!
 
@@ -103,7 +111,8 @@ or any image viewer of your choice:
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
-Use `polaroidme --help` to get a description of all available options:
+Use `polaroidme --help` to get a description of all available options - it
+gets a bit more complex + inspiring then. :)
 
 ```console
 foo@bar:~$ polaroidme --help
@@ -239,16 +248,19 @@ TODO
  changelog
  ---------
 
- **0.9.33** (work in progress)
- - restructuring the messy parts a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
- - adds minimalistic filter-funcs for fun (asciiart, pixelsorting, ...)
- - includes serious filters from https://github.com/Tinker-S/SomeImageFilterWithPython
- - enables filter-chaining possibility
- - support random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
- - adds `--generator` option as an alternative to source-image and getting phonky instead :D
- - contactsheet supports filtering by time-window (PLANNED)
- - improved template support
- - bugfixes & new bugs :)
+ **0.9.38** (work in progress)
+ - introduces generators (`--generator` option) as an alternative to source-image.
+ - implements a simple to use plugin-mechanism for custom filters & generators.
+   => makes it a no-brainer to write a custom plugin (`see plugins/examples/examples.py`).
+ - adds minimalistic + fun filter-funcs (asciiart, pixelsorting, heehee)
+ - includes "serious filters" from https://github.com/Tinker-S/SomeImageFilterWithPython
+ - enables filter-chaining support
+ - seperates polaroidme-plugin repository from the core-script
+ - supports random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
+ - restructures all the messy parts at least a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
+ - TODO: contactsheet supports filtering by time-window
+ - TODO: improved template support
+ - bugfixes & new bugs
 
  **0.9.32**
  - option to use high-res scanned blank Polaroid frames as template

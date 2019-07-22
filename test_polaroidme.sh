@@ -4,19 +4,15 @@ FQFN_CONF=$(realpath ./polaroidme/polaroidme.conf)
 #FONT=$(realpath ./polaroidme/fonts/MiasScribblings~.ttf)
 FQFN_FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 
-#./pom ./input/spritething-13x13-10-2000.jpg -o ./examples/spritething-13x13-10-2000.polaroid.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" && feh ./examples/spritething-13x13-10-2000.polaroid.png
-./pom ${DIR_IN}spritething-13x13-10-2000.jpg -o spritething-13x13-10-2000.polaroid-01.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" && feh spritething-13x13-10-2000.polaroid-01.png
-./pom ${DIR_IN}spritething-13x13-10-2000.jpg -o spritething-13x13-10-2000.polaroid-01.small.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" -m 800 && feh spritething-13x13-10-2000.polaroid-01.small.png
+#pom ./input/spritething-13x13-10-2000.jpg -o ./examples/spritething-13x13-10-2000.polaroid.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" && feh ./examples/spritething-13x13-10-2000.polaroid.png
+pom ${DIR_IN}spritething-13x13-10-2000.jpg -o spritething-13x13-10-2000.polaroid-01.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" && feh spritething-13x13-10-2000.polaroid-01.png
+pom ${DIR_IN}spritething-13x13-10-2000.jpg -o spritething-13x13-10-2000.polaroid-01.small.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "space invaders" -m 800 && feh spritething-13x13-10-2000.polaroid-01.small.png # weiste bescheid ;) #generativeart 
 
-#./pom ${DIR_IN}spritething-13x13-10-2000.jpg -o spritething-13x13-10-2000.polaroid-02.png -f fonts/asciid.fontvir.us.ttf  --template ./polaroidme/templates/fzm-Polaroid.Frame-10.jpg --title "UTF-8 vir.us f(r)ont :)" && feh spritething-13x13-10-2000.polaroid-02.png
-# weiste bescheid ;)
-echo "...weiste bescheid ;) #hierso #generativeart #bananencode #100bugs101bug101bugs110bugs111bugs aber mir gefällt das so #rem!xkultur #minimalsim #contextswitch Heil #digitslisi. Heftig inspired by -> https://medium.freecodecamp.org/how-to-create-generative-art-in-less-than-100-lines-of-code-d37f379859f
- "
-exit 1
-
-./pom ./input/IMG_20190720_122246.jpg -o ./examples/smartphone-endofgreenshirt.png  --title "Shirt" --title-meta --m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
-
-./pom ./input/IMG_20190720_135807-01.jpeg -o ./examples/smartphone-john.png --title "yu-huh" --title-meta -m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
+pom ./input/IMG_20190720_122246.jpg -o ./examples/smartphone-endofgreenshirt.png  --title "Shirt" --title-meta --m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
+pom ./input/IMG_20190720_135807-01.jpeg -o ./examples/smartphone-john.png --title "yu-huh" --title-meta -m 600 --template polaroidme/templates/fzm-Polaroid.Frame-04.jpg
+feh ./examples/smartphone-endofgreenshirt.png
+feh ./examples/smartphone-john.png
+exit 0
 
 pom ${DIR_IN}DSCF4700.jpg -o test-00.png --title "test-00. --title" --max-size 400 || exit 1
 pom ${DIR_IN}octocat.png -o test-01.png --title "test-01B --edit 2ascii" --edit 2ascii || exit 1
