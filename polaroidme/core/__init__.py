@@ -17,17 +17,6 @@ from pluginbase import PluginBase
 from polaroidme.helpers import get_resource_file, show_error
 from polaroidme.helpers.gfx import get_exif
 from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
-from polaroidme.filters import convert_ascii_to_image, convert_image_to_ascii
-from polaroidme.filters.pixelsort import do_pixelsort
-from polaroidme.filters import diffuse
-from polaroidme.filters.emboss import emboss
-from polaroidme.filters.find_edge import find_edge
-from polaroidme.filters.glowing_edge import glowing_edge
-from polaroidme.filters.ice import ice
-from polaroidme.filters.molten import molten
-from polaroidme.filters.mosaic import mosaic
-from polaroidme.filters.oil_painting import oil_painting as oil
-from polaroidme.filters.oil_painting2 import oil_painting as oil2
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -59,11 +48,6 @@ RESOURCE_CONFIG_FILE="polaroidme.conf"
 TEMPLATE_BOXES = {} # if --template is used we need a dict with templatename and box-definition for the image
 TEMPLATE = None
 
-FILTERS = [ 'ascii', 'ascii-color', 'pixelsort' ,
-            'diffuse', 'emboss', 'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic',
-            'oil', 'oil2',
-          ]
-
 plugin_base = PluginBase(package='polaroidme.pluginframework')
 plugin_source_dummy = plugin_base.make_plugin_source(
     searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/dummy/", ])
@@ -76,9 +60,7 @@ PLUGINS_DUMMY = {}
 PLUGINS_FILTERS = {}
 PLUGINS_GENERATORS = {}
 
-
-__version__ = (0,9,33)
-
+__version__ = (0,9,36)
 
 def get_version():
     return(__version__)
@@ -94,10 +76,17 @@ def _register_plugins():
         log.info("loading dummy-plugin %s ... " % plug)
         plug_instance = plugin_source_dummy.load_plugin(plug)
         PLUGINS_DUMMY[plug_instance.name] = plug_instance
+    log.info("loading filter-plugins from %s" % plugin_source_filters.searchpath)
     for plug in plugin_source_filters.list_plugins():
-        log.info("TODOP2 loading filter-plugin %s ... " % plug)
         plug_instance = plugin_source_filters.load_plugin(plug)
+        try:
+            plug_name = plug_instance.name
+        except:
+            log.warning("loading of %s failed. no .name set?" % plug)
+            continue
         PLUGINS_FILTERS[plug_instance.name] = plug_instance
+        log.info("filter '%s' successfully loaded" % plug_instance.name)
+
     log.info("... loading generator plugins")
     log.debug("generators.list_plugins %s" % plugin_source_generators.list_plugins())
     for plug in plugin_source_generators.list_plugins():
@@ -212,7 +201,6 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'RESOURCE_FONT_SIZE' : RESOURCE_FONT_SIZE,
         'TEMPLATE_KEY' : TEMPLATE,
         'TEMPLATE_VALUE': None,# we fill this if template ist != None
-        'FILTERS' : FILTERS,
         'PLUGINS_DUMMY' : list(PLUGINS_DUMMY.keys()),
         'PLUGINS_FILTERS' : list(PLUGINS_FILTERS.keys()),
         'PLUGINS_GENERATORS' : list(PLUGINS_GENERATORS.keys()),
@@ -221,15 +209,18 @@ def setup_globals(size, configfile=None, template = None, show = True):
             SETTINGS['TEMPLATE_KEY'] = os.path.basename(TEMPLATE),
             SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(TEMPLATE)],
         for k in list(PLUGINS_DUMMY.keys()):
-            SETTINGS["plugins.dummy." + k + ".description"] = PLUGINS_DUMMY[k].description
-            SETTINGS["plugins.dummy." + k + ".kwargs"] = PLUGINS_DUMMY[k].kwargs
-            SETTINGS["plugins.dummy." + k + ".author"] = PLUGINS_DUMMY[k].author
+            SETTINGS["plugins.example." + k + ".description"] = PLUGINS_DUMMY[k].description
+            SETTINGS["plugins.example." + k + ".description"] = PLUGINS_DUMMY[k].version
+            SETTINGS["plugins.example." + k + ".kwargs"] = PLUGINS_DUMMY[k].kwargs
+            SETTINGS["plugins.example." + k + ".author"] = PLUGINS_DUMMY[k].author
         for k in list(PLUGINS_FILTERS.keys()):
             SETTINGS["plugins.filters." + k + ".description"] = PLUGINS_FILTERS[k].description
+            SETTINGS["plugins.filters." + k + ".version"] = PLUGINS_FILTERS[k].version
             SETTINGS["plugins.filters." + k + ".kwargs"] = PLUGINS_FILTERS[k].kwargs
             SETTINGS["plugins.filters." + k + ".author"] = PLUGINS_FILTERS[k].author
         for k in list(PLUGINS_GENERATORS.keys()):
             SETTINGS["plugins.generators." + k + ".description"] = PLUGINS_GENERATORS[k].description
+            SETTINGS["plugins.generators." + k + ".version"] = PLUGINS_GENERATORS[k].version
             SETTINGS["plugins.generators." + k + ".kwargs"] = PLUGINS_GENERATORS[k].kwargs
             SETTINGS["plugins.generators." + k + ".author"] = PLUGINS_GENERATORS[k].author
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
@@ -381,50 +372,45 @@ def _apply_filters(image, filters = None, filters_args = None):
     return PIL Image
     """
     img = image
+    kwargs = None
     for edit_filter in filters:
         filter_func = None
-        if edit_filter in ('2ascii', 'ascii'):
-            img_as_ascii = convert_image_to_ascii(img)
-            img = convert_ascii_to_image(img_as_ascii, color=(0,0,0))
-        elif edit_filter in ('2ascii-color', 'ascii-color'):
-            img_as_ascii = convert_image_to_ascii(img)
-            img = convert_ascii_to_image(img_as_ascii, color=(0,0,240))
+        if edit_filter in ('ascii', 'ascii-color'):
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
+            kwargs['image'] = img
+            if edit_filter == 'ascii':
+                kwargs['color'] = (0,0,0)
+            else:
+                kwargs['color'] = (0,0,240) #TODO choose random color
         elif edit_filter in ('pixelsort'):
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
             algos = [1,10,20]
             idx = random.randint(0,2)
             algo = algos[idx]
-            log.info("pixelsort algo %i" % algo)
-            img = do_pixelsort(img, algo=algo)
-            source = img
+            kwargs['image'] = img
+            kwargs['algo'] = algo
         elif edit_filter in ('mosaic'):
-            block_size = int(image.size[0] / random.randint(2,32))
-            img = mosaic(image, block_size = block_size)
-        elif edit_filter in ('diffuse'):
-            filter_func = diffuse
-        elif edit_filter in ('emboss'):
-            filter_func = emboss
-        elif edit_filter in ('find_edge'):
-            filter_func = find_edge
-        elif edit_filter in ('glowing_edge'):
-            filter_func = glowing_edge
-        elif edit_filter in ('ice'):
-            filter_func = ice
-        elif edit_filter in ('molten'):
-            filter_func = molten
-        elif edit_filter in ('oil'):
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
+            block_size = int(img.size[0] / random.randint(2,32))
+            kwargs['image'] = img
+            kwargs['block_size'] = block_size
+        elif edit_filter in ('oil', 'oil2'):
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
             brush_size = random.randint(1,8)
             roughness = random.randint(1,255)
-            img = oil(img)
-        elif edit_filter in ('oil2'):
-            img = oil2(img)
-
-        if filter_func:
-            img = filter_func(img)
-
+            kwargs['image'] = img
+            kwargs['brush_size'] = brush_size
+            kwargs['roughness'] = roughness
+        else:
+            # generic interface (kwargs always with 'image' and optionally with other arguments set to defaults)
+            kwargs = PLUGINS_FILTERS[edit_filter].kwargs
+        log.debug("%s kwargs = %s" % (edit_filter,kwargs))
+        img = PLUGINS_FILTERS[edit_filter].run(**kwargs)
     return img
 
-#if __name__ == '__main__':
 def main(args):
+    rand_seed = random.randrange(sys.maxsize)
+    random.seed(rand_seed)
     _register_plugins()
     options = { 'rotate': None, 'crop' : True } # defaults
     source = None
@@ -479,8 +465,8 @@ def main(args):
     if args['--filter']:
         apply_filters = args['--filter'].split(',')
         for filter in apply_filters:
-            if filter not in FILTERS:
-                show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (filter,FILTERS))
+            if filter not in PLUGINS_FILTERS:
+                show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (filter, PLUGINS_FILTERS))
     # ---
     if template:
         size = None # needs to be calculated
@@ -489,8 +475,7 @@ def main(args):
     template = TEMPLATE
     if args['--max-size']:
         max_size = int(args['--max-size'])
-    rand_seed = random.randrange(sys.maxsize)
-    # heree we go...
+    # here we go...
     if source: # usually source is an image
         if add_meta_to_title:
             exif_data = get_exif(source)
