@@ -12,7 +12,11 @@ import logging
 from docopt import docopt
 import exifread
 from PIL import Image, ImageDraw, ImageFont, ExifTags
+from pluginbase import PluginBase
 
+from polaroidme.helpers import get_resource_file, show_error
+from polaroidme.helpers.gfx import get_exif
+from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
 from polaroidme.filters import convert_ascii_to_image, convert_image_to_ascii
 from polaroidme.filters.pixelsort import do_pixelsort
 from polaroidme.filters import diffuse
@@ -24,12 +28,6 @@ from polaroidme.filters.molten import molten
 from polaroidme.filters.mosaic import mosaic
 from polaroidme.filters.oil_painting import oil_painting as oil
 from polaroidme.filters.oil_painting2 import oil_painting as oil2
-
-from polaroidme.generators import psychedelic as gen_psychedelic
-from polaroidme.helpers import get_resource_file, show_error
-from polaroidme.helpers.gfx import get_exif
-from polaroidme.helpers.gfx import crop_image_to_square, scale_image_to_square, scale_image, scale_square_image
-
 
 # --- configure logging
 log = logging.getLogger(__name__)
@@ -65,7 +63,18 @@ FILTERS = [ 'ascii', 'ascii-color', 'pixelsort' ,
             'diffuse', 'emboss', 'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic',
             'oil', 'oil2',
           ]
-GENERATORS = ['psychedelic',]
+
+plugin_base = PluginBase(package='polaroidme.pluginframework')
+plugin_source_dummy = plugin_base.make_plugin_source(
+    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/dummy/", ])
+plugin_source_filters = plugin_base.make_plugin_source(
+    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/filters/", ])
+plugin_source_generators = plugin_base.make_plugin_source(
+    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/random-art/",])
+
+PLUGINS_DUMMY = {}
+PLUGINS_FILTERS = {}
+PLUGINS_GENERATORS = {}
 
 
 __version__ = (0,9,33)
@@ -75,6 +84,31 @@ def get_version():
     return(__version__)
 
 # ---
+
+def _register_plugins():
+    global PLUGINS_TESTS
+    global PLUGINS_FILTERS
+    global PLUGINS_GENERATORS
+    #print(plugin_source_dummy.searchpath)
+    for plug in plugin_source_dummy.list_plugins():
+        log.info("loading dummy-plugin %s ... " % plug)
+        plug_instance = plugin_source_dummy.load_plugin(plug)
+        PLUGINS_DUMMY[plug_instance.name] = plug_instance
+    for plug in plugin_source_filters.list_plugins():
+        log.info("TODOP2 loading filter-plugin %s ... " % plug)
+        plug_instance = plugin_source_filters.load_plugin(plug)
+        PLUGINS_FILTERS[plug_instance.name] = plug_instance
+    log.info("... loading generator plugins")
+    log.debug("generators.list_plugins %s" % plugin_source_generators.list_plugins())
+    for plug in plugin_source_generators.list_plugins():
+        if plug.startswith('polaroidme_plugin') or plug.startswith('polaroidme-plugin'):
+            plug_instance = plugin_source_generators.load_plugin(plug)
+            plug_name = plug_instance.name
+            if plug_name in PLUGINS_GENERATORS:
+                log.warning("loading generator-plugin '%s' skipped because of name-conflict" % plug_name)
+                continue
+            PLUGINS_GENERATORS[plug_instance.name] = plug_instance
+            log.info("generator '%s' successfully loaded" % plug_instance.name)
 
 def setup_globals(size, configfile=None, template = None, show = True):
     global IMAGE_SIZE
@@ -179,11 +213,25 @@ def setup_globals(size, configfile=None, template = None, show = True):
         'TEMPLATE_KEY' : TEMPLATE,
         'TEMPLATE_VALUE': None,# we fill this if template ist != None
         'FILTERS' : FILTERS,
-        'GENERATORS' : GENERATORS,
+        'PLUGINS_DUMMY' : list(PLUGINS_DUMMY.keys()),
+        'PLUGINS_FILTERS' : list(PLUGINS_FILTERS.keys()),
+        'PLUGINS_GENERATORS' : list(PLUGINS_GENERATORS.keys()),
         }
         if template:
             SETTINGS['TEMPLATE_KEY'] = os.path.basename(TEMPLATE),
             SETTINGS['TEMPLATE_VALUE'] = TEMPLATE_BOXES[os.path.basename(TEMPLATE)],
+        for k in list(PLUGINS_DUMMY.keys()):
+            SETTINGS["plugins.dummy." + k + ".description"] = PLUGINS_DUMMY[k].description
+            SETTINGS["plugins.dummy." + k + ".kwargs"] = PLUGINS_DUMMY[k].kwargs
+            SETTINGS["plugins.dummy." + k + ".author"] = PLUGINS_DUMMY[k].author
+        for k in list(PLUGINS_FILTERS.keys()):
+            SETTINGS["plugins.filters." + k + ".description"] = PLUGINS_FILTERS[k].description
+            SETTINGS["plugins.filters." + k + ".kwargs"] = PLUGINS_FILTERS[k].kwargs
+            SETTINGS["plugins.filters." + k + ".author"] = PLUGINS_FILTERS[k].author
+        for k in list(PLUGINS_GENERATORS.keys()):
+            SETTINGS["plugins.generators." + k + ".description"] = PLUGINS_GENERATORS[k].description
+            SETTINGS["plugins.generators." + k + ".kwargs"] = PLUGINS_GENERATORS[k].kwargs
+            SETTINGS["plugins.generators." + k + ".author"] = PLUGINS_GENERATORS[k].author
         print(json.dumps(SETTINGS,indent=4,sort_keys=True))
 
 def make_polaroid(source, size, options, align, title, f_font = None, font_size = None, template = None, bg_color_inner=(255,255,255),filter_func=None):
@@ -365,7 +413,7 @@ def _apply_filters(image, filters = None, filters_args = None):
             filter_func = molten
         elif edit_filter in ('oil'):
             brush_size = random.randint(1,8)
-            roughness = random.randint(1,255)            
+            roughness = random.randint(1,255)
             img = oil(img)
         elif edit_filter in ('oil2'):
             img = oil2(img)
@@ -377,6 +425,7 @@ def _apply_filters(image, filters = None, filters_args = None):
 
 #if __name__ == '__main__':
 def main(args):
+    _register_plugins()
     options = { 'rotate': None, 'crop' : True } # defaults
     source = None
     size = IMAGE_SIZE # inner size, only the picture without surrounding frame
@@ -388,7 +437,6 @@ def main(args):
     configfile = get_resource_file(RESOURCE_CONFIG_FILE)
     max_size = None # max size (width) of the contactsheet
     add_exif_to_title = None
-
     bg_color_inner = COLOR_BG_INNER
     # process options
     source = args['<source-image>']
@@ -398,9 +446,8 @@ def main(args):
             raise Exception("hey, great idea! :) reading from STDIN isn't supported yet but it's on the TODO-list.")
     else:
         generator = args['--generator'] # surpriseme :)
-        if not generator in GENERATORS:
-            show_error("Hu? Sorry no generator '%s' unknown. Valid choices are: %s" % (generator, GENERATORS))
-
+        if not generator in PLUGINS_GENERATORS:
+            show_error("Hu? Sorry generator '%s' unknown. Valid choices are: %s" % (generator, PLUGIN_GENERATORS.keys()))
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
@@ -463,7 +510,8 @@ def main(args):
     else: # but source can also be a generative art thingy
         if generator == 'psychedelic':
             #source, meta = gen_psychedelic(pixels_per_unit = size, seed = None)
-            source, meta = gen_psychedelic(pixels_per_unit = 150, seed = rand_seed)
+            generator = PLUGINS_GENERATORS[generator]
+            source, meta = generator.run(pixels_per_unit = 150, seed = rand_seed)
     if add_meta_to_title:
         if len(title) > 0:
             title += " "
