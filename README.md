@@ -1,62 +1,62 @@
-polaroidme - converts an image into vintage polaroid style
-==========================================================
+polaroidme - vintage polaroid style + generative art
+====================================================
 
-polaroidme is a command-line-tool for placing an image into a
-Polaroid-like frame and optionally put a title / description or meta infos
-out of EXIF-data on the bottom.
-The default font mimics scribbled handwriting but any (ttf-)font
-which suits your taste is supported. The tool offers basic features
-like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
+what
+----
+
+polaroidme is a simple command-line-tool & python-library for placing an image
+into a Polaroid-like frame and optionally put a title / description or meta infos
+out of EXIF-data on the bottom. The default font mimics scribbled handwriting
+but any (ttf-)font which suits your taste is supported. The tool offers basic
+features like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
-of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
+Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/fokus) recently polaroidme gets phonky by providing:
 
-Since Version 0.9.3 it is also used for publishing minimalistic
-generative art projects. This functionality is inspiring + phonky but in a very early state yet
-and therefore no pypi-package of this available yet.
+* generative-art-"generators" which are fun to play with
+* chainable filters (`--filter f1,f2,...,fN`)
+* reading EXIF-data
+* lightweight plugin-framework - makes it simple to use (and write) additional filters & generators
+* support for templates
+* `--help`-option :)
 
+To see if it fits your needs take a look at the project's github-repo and check out the
+[examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
 
-polaroidme is simple to use:
+Example output (with templates):
+
+<img src="/examples/test-04.png" width="48%"></img>
+<img src="/examples/test-04B.png" width="48%"></img>
+
+The basic usage is a no-brainer (and produces relatively boring results):
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
 ```
 
-To get an appealing rugged analogue style you can [use high-resolution scans of
-polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
+To get an appealing rugged analogue style you can also make "huge" prints of [use high-resolution scans of polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
 
-Example output:
+Sadly i don't know a source of CreativeCommons (or alike) licensed scans in that
+high quality and i don't own a good scanner - if you would like to help:
+adding some high-res scans in the FLOSS tradition - means for "free as in freedom, not as in beer" - would be wonderfull! (:
 
-<img src="/examples/test-04.png" width="48%"></img>
-<img src="/examples/test-04B.png" width="48%"></img>
+why
+---
 
-If you need more control over the output polaroidme offers you plenty of options.
-The `--nocrop` Flag is an example of an option which is handy if your input images
-are not in square-format and you don't want to get parts cropped (default).
-
-Though polaroidme is intended and commonly used as a command-line-tool it is also
-a regular python-module (since version 0.9.2). Using it in other software is
-therefore as simple as:
-
-```
-#!/usr/bin/env python3
-
-from polaroidme import make_polaroid
-
-[...]
-```
-
-polaroidme is actively maintained & developed (2019). To see if it fits
-your needs take a look at the project's github-repo and check out the
-[examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
-
-Contributions are welcome, and they are greatly appreciated!
+The author's main usecase for polaroidme is doing minimalistic artworks in
+printing quality with it - and learning and mixing fun to use technologies
+full-stack around it (raspi, webapis, flutter). :-)
 
 <img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
 <img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
+
+Contributions are welcome, and they are greatly appreciated!
+
+Please feel free to
+send pull-requests and / or the [issue tracker](https://github.com/s3h10r/polaroidme/issues)
+for reporting bugs and feature-/change-requests.
 
 installation
 ------------
@@ -76,7 +76,7 @@ you through the process.
 usage
 -----
 
-example usage:
+simple usecase:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png -o /tmp/mypolaroid.png
@@ -105,7 +105,8 @@ or any image viewer of your choice:
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
-Use `polaroidme --help` to get a description of all available options:
+Use `polaroidme --help` and/or the sourcecode to get a description of all available options - it
+gets more inspiring:
 
 ```console
 foo@bar:~$ polaroidme --help
@@ -114,17 +115,17 @@ polaroidme - converts an image into vintage polaroid style
 
 Usage:
   polaroidme <source-image> [--output=<filename>]
-  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>]
-  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta]
-  polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--font=<f>] [--size-inner=<n>] [--max-size=<w>]
-  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--alignment=<str>] [--title=<str>][--title-meta] [-f=<f>] [--template=<str>] [-c=<str>] [-m=<w>]
-  polaroidme <source-image> [--nocrop|--crop] [--alignment=<str>] [--title=<str>] [--title-meta] [-f=<str>] [-s=<n>] [-o=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>]
-  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--title-meta] [-f=<f>] [-s=<n>] [-o=<fn>] [--alignment=<str>] [--template=<str>] [-config=<str>] [-m=<w>] [--title-meta]
+  polaroidme <source-image> [-o=<filename>] [--title=<str>] [--title-meta] [--font=<f>] [--filter=<str>]
+  polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--crop] [--alignment=<str>] [--filter=<str>] [--title=<str>]
+  polaroidme <source-image> [-o=<fn>] [--nocrop|--crop] [--alignment=<str>] [--size-inner=<n>] [--max-size=<w>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--filter=<str>]
+  polaroidme <source-image> [-o=<fn>] [--template=<str>] [--config=<str>] [--title=<str>][--title-meta] [--font=<f>] [--size-inner=<n>] [--max-size=<w>] [--filter=<str>]
+  polaroidme <source-image> [-o=<fn>] [--size-inner=<n>] [--alignment=<str>] [--title=<str>][--title-meta] [-f=<f>] [--template=<str>] [-c=<str>] [-m=<w>] [--filter=<str>]
+  polaroidme <source-image> [--nocrop|--crop] [--alignment=<str>] [--title=<str>] [--title-meta] [-f=<str>] [-s=<n>] [-o=<filename>] [--template=<str>] [--config=<str>] [--max-size=<w>] [--filter=<str>]
+  polaroidme <source-image> [--clockwise|--anticlock] [--nocrop|--crop] [--title=<str>] [--title-meta] [-f=<f>] [-s=<n>] [-o=<fn>] [--alignment=<str>] [--template=<str>] [-config=<str>] [-m=<w>] [--title-meta] [--filter=<str>]
+  polaroidme [--generator=<str>] [-o=<fn>] [--template=<str>] [-config=<str>] [--filter=<str>] [--clockwise|--anticlock] [--title=<str>] [--title-meta] [-f=<f>] [-s=<n>] [-m=<w>]
 
 Where:
   source-image    Name of the image file to convert.
-  font            Specify (ttf-)font to use (full path!)
-
 Options:
   --alignment=<str> Used for cropping - specifies the portion of the image
                     to include in the final output.
@@ -137,10 +138,17 @@ Options:
   --clockwise       Rotate the image clockwise before processing
   --crop            the images will be cropped to fit. see --alignment
   -f, --font=<f>    Specify (ttf-)font to use (full path!)
+  --filter=<str>    One or more (seperated by comma) of
+                    'ascii', 'ascii-color', 'pixelsort', 'diffuse', 'emboss',
+                    'find_edge', 'glowing_edge', 'ice', 'molten', 'mosaic', ...
+                    If more than one filter is used (filterchain) they will be applied in
+                    the sequence given.
+  --generator=<str> Get phonky & create some generative art instead of using an input-image.
   -s,--size-inner=<n> Size of the picture-part of the polaroid in pixels (default=800)
-  --title=<str>     Defines an optional caption to be displayed at the
+  -t,--title=<str>  Defines an optional caption to be displayed at the
                     bottom of the image. (default=None)
-  --title-meta      Adds EXIF-data (date of capturing) to the title.
+  --title-meta      Adds EXIF-data (date of capturing) to the title. If Input is
+                    a generator this adds infos about the generator's params.
   -m,--max-size=<w> Sets maximum size (width) of the created polaroid.
                     (size-inner + frame <= max-size)
   --nocrop          Rescale the image to fit fullframe in the final output
@@ -155,6 +163,8 @@ Options:
 
   -h, --help        Print this.
       --version     Print version.
+
+The `latest version is available on github: https://github.com/s3h10r/polaroidme>
 ```
 
 installation from sources
@@ -193,6 +203,21 @@ Successfully installed polaroidme-0.8.6
 foo@bar:~$
 ```
 -->
+Does it integrate into other apps?
+----------------------------------
+
+Though polaroidme is intended and commonly used as a hackish command-line-tool it is also
+a regular python-module (since version 0.9.2). Using it in other apps is
+therefore as simple as:
+
+```
+#!/usr/bin/env python3
+
+from polaroidme import make_polaroid
+from.polaroidme.plugins.filters import ascii
+
+[...]
+```
 
 Credits
 -------
@@ -213,90 +238,38 @@ Some filters are taken from:
 
  - [https://github.com/Tinker-S/SomeImageFilterWithPython](https://github.com/Tinker-S/SomeImageFilterWithPython)
 
-**Thank you guys for sharing your ideas for free and supporting the remix culture - and also for making IT fun again!** Live long and prosper! :)
-All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ...
+**Thank you guys!** Live long and prosper!
 
-TODO
-----
- - minimalistic & fun to use plugins (edit/filter/generate): asciiart, pixelsort, texture-blending, ... #generativeart
- - support more shapes than square (means: much more template usecases :))
- - custom colors (arg, means, ...)
- - finish contactsheet (feature)
- - template auto-preps
- - automated testing
- - option to put a description-text / link / Copyleft below title / watermark
- - rewrite corkboard (lab-branch) and add it to master
- - basic stats & picture analysis
- - include some templates(-configuration) for easypeasy usage
+All the crap and bugs in the code is made by me of course. Please feel free to refacture, fix, tinker, ...
 
  changelog
  ---------
 
- **0.9.33** (work in progress)
- - restructuring the messy parts a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
- - adds minimalistic filter-funcs for fun (asciiart, pixelsorting, ...)
- - includes serious filters from https://github.com/Tinker-S/SomeImageFilterWithPython
- - enables filter-chaining possibility
- - support random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
- - adds `--generator` option as an alternative to source-image and getting phonky instead :D
- - contactsheet supports filtering by time-window (PLANNED)
- - improved template support
- - bugfixes & new bugs :)
+* please see [CHANGELOG.md](./CHANGELOG.md)
 
- **0.9.32**
- - option to use high-res scanned blank Polaroid frames as template
-   (NEW args `--template` & `--config`). visual output quality
-   gains expression by this. :)
- - inits tools for template-preparation (trim_, setup_)
- - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
-   (NEW arg `--title-meta`).
- - new args `--size-inner` & `--max-size``
- - several minor bugfixes
- - contactsheet: sorting options based on EXIF-data
+License
+-------
 
- **0.9.2**
- - converts into a "real" python-module which exports its core-functionality (`make_polaroid()`-function)
- - adds contactsheet-script (thumbnails can be polaroids with filename as caption)
- - convinient argparsing (via docopt)
- - testbuild-script
- - updates docs
+polaroidme is made with <3, actively maintained & developed by Sven Hessenmüller.
 
- **0.9.1**
- - argument alignment omitted if `--nocrop option` is set
- - updates packaging meta-data & docs
- - adds more free fonts. changes default font to [Jakes Handwriting](https://www.dafont.com/jakeshandwriting.font)
+MIT License
 
- **0.9.0**
- - packaging (pypi)
+Copyright (c) 2019 Sven Hessenmüller <sven.hessenmueller@gmail.com>
 
- **0.8.4**
- - updates usage-string
- - adds correct file encoding (`pydoc3 ./polaroidme`)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
- **0.8.2**
- - adds free example fonts (source: https://www.dafont.com/ttf.d592)
- - support for different fonts via argument
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
- **0.8.0**
- - supports for high-res output (argument size, default=800)
- - adds `--nocrop` option
- - refactoring
-
- **0.1.0**
-
- - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
- - converts to python3
-
-
- older example output
- --------------------
-
- <img src="/examples/test-04D.png" width="48%"></img>
- <img src="/examples/example.corkboard.jpg" width="48%"></img>
- <!--
- <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
- -->
- <!-- TODO: add contactsheet example -->
-
- <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
- <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
