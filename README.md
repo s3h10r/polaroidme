@@ -44,7 +44,6 @@ adding some high-res scans in the FLOSS tradition - means for "free as in freedo
 
 why
 ---
-
 My main usecase for polaroidme is doing minimalistic artworks in
 printing quality with it - and learning and mixing fun to use technologies
 full-stack around it (raspi, webapis, flutter). :-)
@@ -55,8 +54,7 @@ full-stack around it (raspi, webapis, flutter). :-)
 Contributions are welcome, and they are greatly appreciated!
 
 Please feel free to
-send pull-requests and / or the [issue tracker](https://github.com/s3h10r/polaroidme/issues)
-for reporting bugs and feature-/change-requests.
+send pull-requests and use the [issue tracker](https://github.com/s3h10r/polaroidme/issues).
 
 installation
 ------------
