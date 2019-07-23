@@ -1,11 +1,14 @@
-polaroidme - converts an image into vintage polaroid style
-==========================================================
+polaroidme - vintage polaroid style + generative art
+====================================================
 
-polaroidme is a simple command-line-tool & python-library mainly for placing an image into a
-Polaroid-like frame and optionally put a title / description or meta infos
-out of EXIF-data on the bottom. The default font mimics scribbled handwriting but any (ttf-)font
-which suits your taste is supported. The tool offers basic features
-like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
+what
+----
+
+polaroidme is a simple command-line-tool & python-library for placing an image
+into a Polaroid-like frame and optionally put a title / description or meta infos
+out of EXIF-data on the bottom. The default font mimics scribbled handwriting
+but any (ttf-)font which suits your taste is supported. The tool offers basic
+features like auto-scaling up-/downwards and/or cropping, using any (ttf-)font,
 supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
@@ -17,9 +20,15 @@ Starting as [a script for making high-res contactsheets which make the beholder'
 * reading EXIF-data
 * lightweight plugin-framework - makes it simple to use (and write) additional filters & generators
 * support for templates
+* `--help`-option :)
 
 To see if it fits your needs take a look at the project's github-repo and check out the
 [examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
+
+Example output (with templates):
+
+<img src="/examples/test-04.png" width="48%"></img>
+<img src="/examples/test-04B.png" width="48%"></img>
 
 The basic usage is a no-brainer (and produces relatively boring results):
 
@@ -29,23 +38,25 @@ foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/
 
 To get an appealing rugged analogue style you can also make "huge" prints of [use high-resolution scans of polaroid Frames - the ones i use at the moment can be downloaded here for free](http://www.fuzzimo.com/free-hi-res-blank-polaroid-frames/).
 
-Example output with templates:
-
-<img src="/examples/test-04.png" width="48%"></img>
-<img src="/examples/test-04B.png" width="48%"></img>
-
 Sadly i don't know a source of CreativeCommons (or alike) licensed scans in that
 high quality and i don't own a good scanner - if you would like to help:
 adding some high-res scans in the FLOSS tradition - means for "free as in freedom, not as in beer" - would be wonderfull! (:
 
-who
-----
-polaroidme is made with <3, actively maintained & developed.
+why
+---
 
-Contributions are welcome, and they are greatly appreciated!
+The author's main usecase for polaroidme is doing minimalistic artworks in
+printing quality with it - and learning and mixing fun to use technologies
+full-stack around it (raspi, webapis, flutter). :-)
 
 <img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
 <img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
+
+Contributions are welcome, and they are greatly appreciated!
+
+Please feel free to
+send pull-requests and / or the [issue tracker](https://github.com/s3h10r/polaroidme/issues)
+for reporting bugs and feature-/change-requests.
 
 installation
 ------------
@@ -227,85 +238,38 @@ Some filters are taken from:
 
  - [https://github.com/Tinker-S/SomeImageFilterWithPython](https://github.com/Tinker-S/SomeImageFilterWithPython)
 
-**Thank you guys for sharing your ideas for free and supporting the remix culture - and also for making IT fun again!** Live long and prosper! :)
-All the crap in the code is by me of course. Please feel free to refacture, fix, tinker, ...
+**Thank you guys!** Live long and prosper!
 
-TODO
-----
-
-* plese see the [issue tracker](https://github.com/s3h10r/polaroidme/issues)
+All the crap and bugs in the code is made by me of course. Please feel free to refacture, fix, tinker, ...
 
  changelog
  ---------
 
- **0.9.38** (work in progress)
- - introduces generators (`--generator` option) as an alternative to source-image.
- - implements a simple to use plugin-mechanism for custom filters & generators.
-   => makes it a no-brainer to write a custom plugin (`see plugins/examples/examples.py`).
- - adds minimalistic + fun filter-funcs (asciiart, pixelsorting, heehee)
- - includes "serious filters" from https://github.com/Tinker-S/SomeImageFilterWithPython
- - enables filter-chaining support
- - seperates polaroidme-plugin repository from the core-script
- - supports random-template choice (`--template <fqdir>/random`, `--template <fqdir>/rand`)
- - restructures all the messy parts at least a bit ([packages](https://docs.python.org/3.6/tutorial/modules.html#packages)
- - TODO: contactsheet supports filtering by time-window
- - TODO: improved template support
- - bugfixes & new bugs
+* please see [CHANGELOG.md](./CHANGELOG.md)
 
- **0.9.32**
- - option to use high-res scanned blank Polaroid frames as template
-   (NEW args `--template` & `--config`). visual output quality
-   gains expression by this. :)
- - inits tools for template-preparation (trim_, setup_)
- - option to use EXIF-data (DateTimeOriginal) as title or append it to the title
-   (NEW arg `--title-meta`).
- - new args `--size-inner` & `--max-size``
- - several minor bugfixes   
- - contactsheet: sorting options based on EXIF-data
+License
+-------
 
- **0.9.2**
- - converts into a "real" python-module which exports its core-functionality (`make_polaroid()`-function)
- - adds contactsheet-script (thumbnails can be polaroids with filename as caption)
- - convinient argparsing (via docopt)
- - testbuild-script
- - updates docs
+polaroidme is made with <3, actively maintained & developed by Sven Hessenmüller.
 
- **0.9.1**
- - argument alignment omitted if `--nocrop option` is set
- - updates packaging meta-data & docs
- - adds more free fonts. changes default font to [Jakes Handwriting](https://www.dafont.com/jakeshandwriting.font)
+MIT License
 
- **0.9.0**
- - packaging (pypi)
+Copyright (c) 2019 Sven Hessenmüller <sven.hessenmueller@gmail.com>
 
- **0.8.4**
- - updates usage-string
- - adds correct file encoding (`pydoc3 ./polaroidme`)
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
 
- **0.8.2**
- - adds free example fonts (source: https://www.dafont.com/ttf.d592)
- - support for different fonts via argument
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
 
- **0.8.0**
- - supports for high-res output (argument size, default=800)
- - adds `--nocrop` option
- - refactoring
-
- **0.1.0**
-
- - initial commit based on https://github.com/thegaragelab/pythonutils/tree/master/polaroid
- - converts to python3
-
-
- older example output
- --------------------
-
- <img src="/examples/test-04D.png" width="48%"></img>
- <img src="/examples/example.corkboard.jpg" width="48%"></img>
- <!--
- <img src="/examples/example2.ps-10.polaroid.jpg" width="48%"></img>
- -->
- <!-- TODO: add contactsheet example -->
-
- <img src="/examples/DSCF2330.polaroid.nocrop.png" width="48%"></img>
- <img src="/examples/DSCF2313.polaroid.nocrop.png" width="48%"></img>
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
