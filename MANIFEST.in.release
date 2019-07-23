@@ -1,0 +1,11 @@
+include README.md
+include LICENSE
+recursive-include polaroidme/core *
+recursive-include polaroidme/helpers *
+recursive-include polaroidme/fonts *
+recursive-include polaroidme/plugins *
+recursive-include polaroidme/helpers *
+#recursive-include polaroidme/templates * # only in development mode
+include polaroidme/templates/README       # for pypi-package we can't include templates at the moment, TODO: make a free polaroidme-template repo
+include polaroidme/*conf
+include requirements.txt
