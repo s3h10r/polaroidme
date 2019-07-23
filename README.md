@@ -10,19 +10,16 @@ supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-why
----
+Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/fokus) recently polaroidme gets phonky :) by providing:
 
-polaroidme was intitiated by the need for a script which creates some high-resolution contact sheets
-of an archive of photographs and its output shouldn't make the beholder's eyes bleed.
-Anyways that is broken & boring now & since Version 0.9.xx polaroidme goes into a more phonky direction and grows up a little bit by supporting chainable filter-plugins (`--filter f1,f2,...,fN`) and some generative art stuff (`--generators`) to play around with. To see if it fits
-your needs take a look at the project's github-repo and check out the
+* fun to play with generative-art-"generators"
+* dead and simple to use (and write) chainable (filter-)plugin-structure (`--filter f1,f2,...,fN`)
+* support for templates
+
+To see if it fits your needs take a look at the project's github-repo and check out the
 [examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
 
-how? (on console)
------------------
-
-The basic usage is simple:
+The basic usage is simple (and produces boring results):
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
@@ -39,25 +36,11 @@ Sadly i don't know a source of CreativeCommons (or alike) licensed scans in that
 high quality and i don't own a good scanner - if you would like to help:
 adding some high-res scans in the FLOSS tradition - means for "free as in freedom, not as in beer" - would be wonderfull! (:
 
-how? (in your app)
-------------------
-
-Though polaroidme is intended and commonly used as a command-line-tool it is also
-a regular python-module (since version 0.9.2). Using it in other software is
-therefore nearly as simple as:
-
-```
-#!/usr/bin/env python3
-
-from polaroidme import make_polaroid
-
-[...]
-```
 
 who
 ----
 
-polaroidme is made with <3, maintained & developed (2019).
+polaroidme is made with <3, actively maintained & developed by Sven Hessenmüller.
 
 Contributions are welcome, and they are greatly appreciated!
 
@@ -82,7 +65,7 @@ you through the process.
 usage
 -----
 
-example usage:
+simple usecase:
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png -o /tmp/mypolaroid.png
@@ -111,8 +94,8 @@ or any image viewer of your choice:
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
-Use `polaroidme --help` to get a description of all available options - it
-gets a bit more complex + inspiring then. :)
+Use `polaroidme --help` or the sourcecode to get a description of all available options - it
+gets more inspiring then:
 
 ```console
 foo@bar:~$ polaroidme --help
@@ -209,6 +192,21 @@ Successfully installed polaroidme-0.8.6
 foo@bar:~$
 ```
 -->
+Does it integrate into other apps?
+----------------------------------
+
+Though polaroidme is intended and commonly used as a hackish command-line-tool it is also
+a regular python-module (since version 0.9.2). Using it in other apps is
+therefore as simple as:
+
+```
+#!/usr/bin/env python3
+
+from polaroidme import make_polaroid
+from.polaroidme.plugins.filters import ascii
+
+[...]
+```
 
 Credits
 -------
