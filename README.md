@@ -10,16 +10,18 @@ supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/fokus) recently polaroidme gets phonky :) by providing:
+Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/fokus) recently polaroidme gets phonky by providing:
 
-* fun to play with generative-art-"generators"
-* dead and simple to use (and write) chainable (filter-)plugin-structure (`--filter f1,f2,...,fN`)
+* generative-art-"generators" which are fun to play with
+* chainable filters (`--filter f1,f2,...,fN`)
+* reading EXIF-data
+* lightweight plugin-framework - makes it simple to use (and write) additional filters & generators
 * support for templates
 
 To see if it fits your needs take a look at the project's github-repo and check out the
 [examples](https://github.com/s3h10r/polaroidme/blob/master/README.md)
 
-The basic usage is simple (and produces boring results):
+The basic usage is a no-brainer (and produces relatively boring results):
 
 ```console
 foo@bar:~$ polaroidme ./example/example.png .jpg --title "thatseasyhu?" -o /tmp/mypolaroid.png
@@ -36,11 +38,9 @@ Sadly i don't know a source of CreativeCommons (or alike) licensed scans in that
 high quality and i don't own a good scanner - if you would like to help:
 adding some high-res scans in the FLOSS tradition - means for "free as in freedom, not as in beer" - would be wonderfull! (:
 
-
 who
 ----
-
-polaroidme is made with <3, actively maintained & developed by Sven Hessenmüller.
+polaroidme is made with <3, actively maintained & developed.
 
 Contributions are welcome, and they are greatly appreciated!
 
@@ -94,8 +94,8 @@ or any image viewer of your choice:
 foo@bar:~$ feh ./example/example.polaroid.png
 ```
 
-Use `polaroidme --help` or the sourcecode to get a description of all available options - it
-gets more inspiring then:
+Use `polaroidme --help` and/or the sourcecode to get a description of all available options - it
+gets more inspiring:
 
 ```console
 foo@bar:~$ polaroidme --help
@@ -232,16 +232,8 @@ All the crap in the code is by me of course. Please feel free to refacture, fix,
 
 TODO
 ----
- - minimalistic & fun to use plugins (edit/filter/generate): asciiart, pixelsort, texture-blending, ... #generativeart
- - support more shapes than square (means: much more template usecases :))
- - custom colors (arg, means, ...)
- - finish contactsheet (feature)
- - template auto-preps
- - automated testing
- - option to put a description-text / link / Copyleft below title / watermark
- - rewrite corkboard (lab-branch) and add it to master
- - basic stats & picture analysis
- - include some templates(-configuration) for easypeasy usage
+
+* plese see the [issue tracker](https://github.com/s3h10r/polaroidme/issues)
 
  changelog
  ---------
