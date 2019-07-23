@@ -1,5 +1,7 @@
 include README.md
+include CHANGELOG.md
 include LICENSE
+include LICENSE.txt
 recursive-include polaroidme/core *
 recursive-include polaroidme/helpers *
 recursive-include polaroidme/fonts *

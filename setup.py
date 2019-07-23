@@ -51,7 +51,7 @@ _`examples`: https://github.com/s3h10r/polaroidme/blob/master/README.md
 
 setuptools.setup(
      name='polaroidme',
-     version='0.9.39',
+     version='0.9.38',
      scripts=['cli/polaroidme', 'cli/pom','cli/contactsheet'] ,
      author="Sven Hessenmüller",
      author_email="sven.hessenmueller@gmail.com",
