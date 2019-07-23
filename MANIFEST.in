@@ -1,6 +1,1 @@
-include README.md
-include LICENSE.txt
-recursive-include polaroidme/fonts *
-recursive-include polaroidme/templates *
-include polaroidme/*conf
-include requirements.txt
+MANIFEST.in.development

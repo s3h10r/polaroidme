@@ -1,0 +1,10 @@
+include README.md
+include LICENSE
+recursive-include polaroidme/core *
+recursive-include polaroidme/helpers *
+recursive-include polaroidme/fonts *
+recursive-include polaroidme/plugins *
+recursive-include polaroidme/templates * # only in development mode
+#include polaroidme/templates/README     # otherwise (pypi-package) this
+include polaroidme/*conf
+include requirements.txt
