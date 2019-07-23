@@ -1,6 +1,12 @@
 *pyc
-/input/
+__pycache__
 /build/
 /dist/
 /polaroidme.egg-info/
+/input/*
+/venv/
+/polaroidme.egg-info/
+/polaroidme/templates/*png
+/polaroidme/templates/*jpg
+/polaroidme/plugins/*
 /tmp/
