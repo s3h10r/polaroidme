@@ -54,7 +54,7 @@ plugin_source_dummy = plugin_base.make_plugin_source(
 plugin_source_filters = plugin_base.make_plugin_source(
     searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/filters/", ])
 plugin_source_generators = plugin_base.make_plugin_source(
-    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/random-art/",])
+    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/squares/", os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/random-art/"])
 
 PLUGINS_DUMMY = {}
 PLUGINS_FILTERS = {}
@@ -87,12 +87,15 @@ def _register_plugins():
         PLUGINS_FILTERS[plug_instance.name] = plug_instance
         log.info("filter '%s' successfully loaded" % plug_instance.name)
 
-    log.info("... loading generator plugins")
-    log.debug("generators.list_plugins %s" % plugin_source_generators.list_plugins())
+    log.info("loading generator-plugins from %s" % plugin_source_generators.searchpath)
+    log.info("generators.list_plugins %s" % plugin_source_generators.list_plugins())
     for plug in plugin_source_generators.list_plugins():
-        if plug.startswith('polaroidme_plugin') or plug.startswith('polaroidme-plugin'):
+            log.info("plug try : %s" % plug)
             plug_instance = plugin_source_generators.load_plugin(plug)
-            plug_name = plug_instance.name
+            try:
+                plug_name = plug_instance.name
+            except:
+                continue
             if plug_name in PLUGINS_GENERATORS:
                 log.warning("loading generator-plugin '%s' skipped because of name-conflict" % plug_name)
                 continue
@@ -429,7 +432,7 @@ def main(args):
     random.seed(rand_seed)
     _register_plugins()
     options = { 'rotate': None, 'crop' : True } # defaults
-    source = None
+    source = []
     size = IMAGE_SIZE # inner size, only the picture without surrounding frame
     target = None
     align = "center"
@@ -441,7 +444,8 @@ def main(args):
     add_exif_to_title = None
     bg_color_inner = COLOR_BG_INNER
     # process options
-    source = args['<source-image>'].split(',') # some filters require a list of images ('composite', ...)
+    if args['<source-image>']:
+        source = args['<source-image>'].split(',') # some filters require a list of images ('composite', ...)
     if len(source) == 1:
         source = source[0]
     log.debug("source : %s" % source)
@@ -511,11 +515,15 @@ def main(args):
             target = name + ".polaroid.png"
         if not align in ("left", "right", "top", "bottom", "center"):
             show_error("Unknown alignment %s." % align)
-    else: # but source can also be a generative art thingy
+    elif generator: # source can also be a generative art thingy
         if generator == 'psychedelic':
-            #source, meta = gen_psychedelic(pixels_per_unit = size, seed = None)
+            kwargs = PLUGINS_GENERATORS[generator].kwargs
             generator = PLUGINS_GENERATORS[generator]
-            source, meta = generator.run(pixels_per_unit = 150, seed = rand_seed)
+            source, meta = generator.run(**kwargs)
+        else:
+            kwargs = PLUGINS_GENERATORS[generator].kwargs
+            generator = PLUGINS_GENERATORS[generator]
+            source, meta = generator.run(**kwargs)
     if add_meta_to_title:
         if len(title) > 0:
             title += " "

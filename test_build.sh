@@ -24,7 +24,8 @@ echo "please activate venv to test. the command to do this is:"
 SWITCH2VENV_TEST="source $VENV_INSTALL/bin/activate"
 echo "$SWITCH2VENV_TEST" 
 
-./test_filters.sh
+./test_generators.sh || exit 1
+./test_filters.sh || exit 1
 
 echo "please activate venv to test. the command to do this is:"
 SWITCH2VENV_TEST="source $VENV_INSTALL/bin/activate"
@@ -42,8 +43,7 @@ feh ./tmp/tests/${IMAGE_FN%.jpg}.polaroid.png # ${VAR%pattern} - removes file ex
 #  cp ./tmp/tests/${IMAGE_FN%.jpg}.polaroid.png /tmp/
 #fi
 
-./test_contactsheet.sh
 ./test_polaroidme.sh
-./test_generators.sh
+#./test_generators.sh
 #./test_filters.sh
 rm -Rfi ./tmp/
