@@ -13,7 +13,7 @@ supports high-res output and gets it's job done well.
 
 <img src="examples/spritething-13x13-10-2000.polaroid-01.small.png" width="90%" title="weiste bescheid... ;)"></img>
 
-Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/fokus) recently polaroidme gets phonky by providing:
+Starting as [a script for making high-res contactsheets which make the beholder's eyes not bleed](https://github.com/s3h10r/imaco) recently polaroidme gets phonky by providing:
 
 * generative-art-"generators" which are fun to play with
 * chainable filters (`--filter f1,f2,...,fN`)
