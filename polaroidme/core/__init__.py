@@ -462,6 +462,21 @@ def main(args):
         generator = args['--generator'] # surpriseme :)
         if not generator in PLUGINS_GENERATORS:
             show_error("Hu? Sorry generator '%s' unknown. Valid choices are: %s" % (generator, PLUGINS_GENERATORS.keys()))
+    params_generator = []
+    if args['--params-generator']:
+        params_filter = args['--params-generator'].split('}')
+        params_filter = [el + '}' for el in params_generator if el != '' ]
+    log.debug("params_generator: %s" % params_generator)
+    # overwriting the default-kwargs for filters with user-provided settings
+    for i,pjson in enumerate(params_generator): # should only be 1 generator
+        log.info("generator %s : loading & applying --params-generator %s '%s'" % (generator, i, pjson))
+        params = json.loads(pjson)
+        for k,v in params.items():
+            if k in PLUGINS_GENERATORS[generator].kwargs:
+                PLUGINS_GENERATORS[generator].kwargs[k] = v
+            else:
+                raise Exception("filter %s has no parameter '%s'. please check your --params-filter argument(s)." % (apply_filters[i], k))
+
     if args['--clockwise']:
         option['rotate'] = 'clockwise'
     elif args['--anticlock']:
@@ -495,6 +510,23 @@ def main(args):
         for filter in apply_filters:
             if filter not in PLUGINS_FILTERS:
                 show_error("Hu? Filter '%s' not available. Valid choices are: %s" % (filter, PLUGINS_FILTERS))
+    params_filter = []
+    if args['--params-filter']:
+        params_filter = args['--params-filter'].split('}')
+        params_filter = [el + '}' for el in params_filter if el != '' ]
+    log.debug("params_filter: %s" % params_filter)
+    # overwriting the default-kwargs for filters with user-provided settings
+    for i,pjson in enumerate(params_filter):
+        log.info("filter %s : loading & applying --params-filter %s '%s'" % (apply_filters[i], i, pjson))
+        params = json.loads(pjson)
+        for k,v in params.items():
+            if k in PLUGINS_FILTERS[apply_filters[i]].kwargs:
+                PLUGINS_FILTERS[apply_filters[i]].kwargs[k] = v
+            else:
+                raise Exception("filter %s has no parameter '%s'. please check your --params-filter argument(s)." % (apply_filters[i], k))
+
+    #plugins[filter[0]]
+
     # ---
     if template:
         size = None # needs to be calculated

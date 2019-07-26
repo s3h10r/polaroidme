@@ -1,4 +1,4 @@
-#!/bin/bash 
+#!/bin/bash
 #IMAGE="./tmp/tests/example.ps-10"
 IMAGE="./tmp/tests/DSCF4700"
 IMAGE_EXT=".jpg"
@@ -8,7 +8,7 @@ IMAGE_FN="$(basename ${IMAGE_FQFN})"
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 VENV_INSTALL=$(realpath ./tmp/venv_polaroidme)
 
-# --- build fresh package and install it in a venv for testing purpose 
+# --- build fresh package and install it in a venv for testing purpose
 ./build.sh
 rm -Rf $VENV_INSTALL #mrproper
 rm -Rf ./tmp/
@@ -22,14 +22,15 @@ VERSION=$(polaroidme --version) || exit 1
 echo $VERSION
 echo "please activate venv to test. the command to do this is:"
 SWITCH2VENV_TEST="source $VENV_INSTALL/bin/activate"
-echo "$SWITCH2VENV_TEST" 
+echo "$SWITCH2VENV_TEST"
 
+./test_plugin-params.sh || exit 1
 ./test_generators.sh || exit 1
 ./test_filters.sh || exit 1
 
 echo "please activate venv to test. the command to do this is:"
 SWITCH2VENV_TEST="source $VENV_INSTALL/bin/activate"
-echo "$SWITCH2VENV_TEST" 
+echo "$SWITCH2VENV_TEST"
 
 exit 0
 
