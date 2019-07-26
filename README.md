@@ -54,6 +54,7 @@ full-stack around it (raspi, webapis, flutter). :-)
 pom --generator squares+circles -o /tmp/test.jpg --filter ascii --title '3xp70!t __init__.py' --template /home/s3h10r/development/polaroidme/polaroidme/templates/random --max-size 600 && feh /tmp/test.jpg
 -->
 <img src="/examples/minimalascii.jpg" width="48%" title="--generator squares+circles --filter ascii"></img>
+<img src="/examples/test_generator-sprites.filter-quads-2.jpg" width="48%" title=""></img>
 
 Contributions are welcome, and they are greatly appreciated!
 

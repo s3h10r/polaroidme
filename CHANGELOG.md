@@ -1,9 +1,10 @@
 **0.9.38** (work in progress)
 
-- introduces generators (`--generator` option) as an alternative to source-image.
+- introduces generators (`--generator` option) as an alternative to source-image
+  (psychedelic, squares+circles, sprites, cowsay)
 - implements a simple to use plugin-mechanism for custom filters & generators.
   => makes it a no-brainer to write a custom plugin (`see plugins/examples/examples.py`).
-- adds minimalistic + fun filter-funcs (asciiart, pixelsorting, heehee)
+- adds minimalistic + fun filter-funcs (asciiart, pixelsorting, quads, heehee)
 - includes "serious filters" from https://github.com/Tinker-S/SomeImageFilterWithPython
 - enables filter-chaining support
 - seperates polaroidme-plugin repository from the core-script
