@@ -50,6 +50,10 @@ full-stack around it (raspi, webapis, flutter). :-)
 
 <img src="/examples/test_generator-psychedelic.filter-mosaic,oil2.png" width="48%" title="Psychedelisches Öl2"></img>
 <img src="/examples/test_generator-psychedelic.filter-pixelsort,oil.png" width="48%" title="Psychedelisches sortiert"></img>
+<!--
+pom --generator squares+circles -o /tmp/test.jpg --filter ascii --title '3xp70!t __init__.py' --template /home/s3h10r/development/polaroidme/polaroidme/templates/random --max-size 600 && feh /tmp/test.jpg
+-->
+<img src="/examples/minimalascii.jpg" width="48%" title="--generator squares+circles --filter ascii"></img>
 
 Contributions are welcome, and they are greatly appreciated!
 

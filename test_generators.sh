@@ -1,5 +1,5 @@
 #!/bin/bash -vx
-GENS=('psychedelic' 'squares+circles' 'sprites')
+GENS=('cowsay' 'psychedelic' 'squares+circles' 'sprites')
 
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 CONFIG=$(realpath ./polaroidme/polaroidme.conf)
