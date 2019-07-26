@@ -1,5 +1,5 @@
 #!/bin/bash -vx
-GENS=('cowsay' 'psychedelic' 'squares+circles' 'sprites')
+GENS=('psychedelic' 'squares+circles' 'sprites' 'cowsay')
 
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 CONFIG=$(realpath ./polaroidme/polaroidme.conf)
@@ -7,16 +7,16 @@ TPL=$(realpath ./polaroidme/templates/random)
 MAX_SIZE=600
 FOUT="/tmp/test_generators.jpg"
 
-pom --version 
+pom --version
 
 for gen in "${GENS[@]}"
 do
   echo "testing generator $gen..."
   pom --generator $gen -o $FOUT --title "--generator=${gen}" --template $TPL -c $CONFIG -f $FONT -m $MAX_SIZE|| exit 1
   feh $FOUT
-done 
+done
 
-exit 0 
+exit 0
 
 for gen in "${GENS[@]}"
 do

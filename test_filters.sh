@@ -1,5 +1,5 @@
 #!/bin/bash -vx
-FILTERS=('ascii' 'pixelsort' 'diffuse' 'emboss' 'find_edge' 'glowing_edge' 'ice' 'molten' 'mosaic' 'oil' 'oil2')
+FILTERS=('quads' 'ascii' 'pixelsort' 'diffuse' 'emboss' 'find_edge' 'glowing_edge' 'ice' 'molten' 'mosaic' 'oil' 'oil2')
 FILTERS_MULTI_INPUT=('composite')
 FONT=$(realpath ./polaroidme/fonts/contrast.ttf)
 #FIN="./input/octocat.png"
@@ -8,6 +8,15 @@ FIN2=$(realpath ./examples/smartphone-endofgreenshirt.png)
 FIN3=$(realpath ./examples/smartphone-john.png)
 FOUT="/tmp/test_filter.png"
 FIN_TMP="/tmp/test_filter_tmp.png"
+
+pom --version
+
+for filter in "${FILTERS[@]}"
+do
+  echo "testing filter $filter..."
+pom $FIN -o $FOUT --size-inner 400 --template /home/s3h10r/development/polaroidme/polaroidme/templates/random --config polaroidme/polaroidme.conf --crop --alignment center --title "--filter $filter" --filter $filter --font $FONT -m 600 || exit 1
+feh $FOUT
+done
 
 for filter in "${FILTERS_MULTI_INPUT[@]}"
 do
@@ -25,11 +34,3 @@ feh $FOUT
 cp $FOUT $FIN_TMP
 pom ${FIN_TMP} -o $FOUT --size-inner 400 --template /home/s3h10r/development/polaroidme/polaroidme/templates/random --config polaroidme/polaroidme.conf --crop --alignment center --title "--filter oil2" --filter oil2 --font $FONT -m 600 || exit 1
 feh $FOUT
-
-for filter in "${FILTERS[@]}"
-do
-  echo "testing filter $filter..."
-pom $FIN -o $FOUT --size-inner 400 --template /home/s3h10r/development/polaroidme/polaroidme/templates/random --config polaroidme/polaroidme.conf --crop --alignment center --title "--filter $filter" --filter $filter --font $FONT -m 600 || exit 1
-feh $FOUT
-done
-
