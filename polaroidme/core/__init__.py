@@ -53,8 +53,12 @@ plugin_source_dummy = plugin_base.make_plugin_source(
     searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/dummy/", ])
 plugin_source_filters = plugin_base.make_plugin_source(
     searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/filters/", ])
-plugin_source_generators = plugin_base.make_plugin_source(
-    searchpath=[os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/squares/", os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/random-art/"])
+subdirs = [os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/"]
+subd = [x[0] for x in os.walk(os.path.dirname(os.path.realpath(__file__)) + "/../plugins/generators/")]
+for d in subd:
+    subdirs.append(d)
+print(subdirs)
+plugin_source_generators = plugin_base.make_plugin_source(searchpath=subdirs)
 
 PLUGINS_DUMMY = {}
 PLUGINS_FILTERS = {}
@@ -92,6 +96,7 @@ def _register_plugins():
     for plug in plugin_source_generators.list_plugins():
             log.info("plug try : %s" % plug)
             plug_instance = plugin_source_generators.load_plugin(plug)
+            # dirty way to check if file is a valid plugin: has it a name atrribute -> then it's valid for now...
             try:
                 plug_name = plug_instance.name
             except:
